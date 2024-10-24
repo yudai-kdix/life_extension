@@ -4,11 +4,6 @@
 
 ## フロント
 
-### 必要な環境
-- Docker
-- Docker Compose
-- Git
-
 ### 初回セットアップ手順
 
 1. リポジトリのクローン
@@ -75,24 +70,23 @@ docker compose restart front
 ### ブランチ戦略
 
 ```
-front/develop
-    ├── front/feature/***  # 機能追加
-    ├── front/fix/***      # バグ修正
-    ├── front/refactor/*** # リファクタリング
-    └── front/docs/***     # ドキュメント更新
+main
+└── front/develop
+    └── front/feature/***  # 作業ブランチ
+    └── front/feature/***  # 作業ブランチ
 ```
 
 ### 新機能の開発手順
 
 1. front/developブランチの最新情報を取得
 ```bash
-git checkout front/develop
+git switch front/develop
 git pull origin front/develop
 ```
 
 2. 新しい機能ブランチを作成
 ```bash
-git checkout -b front/feature/[機能名]
+git switch -c front/feature/[機能名] front/develop
 ```
 
 3. 開発作業
@@ -141,7 +135,7 @@ project-root/
 │   └── vite.config.ts
 ├── docker-compose.yml
 ├── .env.example
-└── README.md （このファイル）
+└── README.md
 ```
 
 ## その他
