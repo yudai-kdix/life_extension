@@ -133,3 +133,5 @@ dist
 start.sh
 
 tmp/*
+
+db/*

@@ -18,7 +18,8 @@ services:
   db:
     image: postgres:latest
     volumes:
-      - /var/lib/postgresql/data
+      - ./db/postgres:/var/lib/postgresql/data
+      - ./db/logs:/var/log
     environment:
       # - POSTGRES_HOST_AUTH_METHOD=trust
       POSTGRES_USER: postgres
