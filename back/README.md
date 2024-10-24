@@ -22,12 +22,3 @@ Things you may want to cover:
 * Deployment instructions
 
 * ...
-
-
-多分これで起動するはずです………
-```
-docker compose run --no-deps web rails new . --force --api --database=postgresql
-docker compose build
-docker compose run web rake db:create
-docker compose up
-```
