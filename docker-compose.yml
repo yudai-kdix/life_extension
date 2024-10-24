@@ -1,8 +1,8 @@
-version: '3.8'
+version: "3.8"
 
 services:
   # frontend:
-  #   build: 
+  #   build:
   #     context: ./front
   #     dockerfile: ../docker/front/Dockerfile
   #   ports:
@@ -16,12 +16,13 @@ services:
   #     - VITE_API_URL=${API_URL:-http://localhost:3000}
   #   command: npm run dev
   db:
-    image: postgres
+    image: postgres:latest
     volumes:
-      - ./tmp/db:/var/lib/postgresql/data
+      - /var/lib/postgresql/data
     environment:
-      - POSTGRES_HOST_AUTH_METHOD=trust
-      - POSTGRES_PASSWORD=admin
+      # - POSTGRES_HOST_AUTH_METHOD=trust
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
     ports:
       - "15432:5432"
   api:
