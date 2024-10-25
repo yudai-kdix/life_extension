@@ -44,6 +44,7 @@ actions = [
         "user_id": 1,
         "character_id": 1,
         "action_type": "食事",
+        "detail": "朝食",
         "action_time": "2024-10-24T13:00:00"
     }
 ]
@@ -140,6 +141,7 @@ def create_action():
         "user_id": data["user_id"],
         "character_id": data["character_id"],
         "action_type": data["action_type"],
+        "detail": data.get("detail", ""),
         "action_time": datetime.datetime.now()
     }
     actions.append(new_action)
