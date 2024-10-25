@@ -1,6 +1,6 @@
 モックサーバー手順
 
-python -m venv venv  # 仮想環境の作成
+python -m venv venv 
 source venv/bin/activate
 
 pip install -r requirements.txt

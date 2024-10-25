@@ -1,7 +1,9 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 import datetime
 
 app = Flask(__name__)
+CORS(app)
 
 # モックデータ
 users = [
@@ -123,6 +125,7 @@ def update_character(character_id):
         character.update(data)
         character["last_updated"] = datetime.datetime.now()
         return jsonify(character)
+    print(characters[0])
     return jsonify({"error": "Character not found"}), 404
 
 # キャラクター削除

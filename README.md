@@ -53,16 +53,21 @@ docker compose up -d
 
 ```bash
 # コンテナのログを確認
-docker compose logs -f front
+docker compose logs -f frontend
 
 # コンテナ内でコマンドを実行（例：パッケージのインストール）
-docker compose exec front npm install [package-name]
+docker compose exec frontend npm install [package-name]
+
+# パッケージのインストール
+docker compose exec frontend npm install [package-name]
+cd front
+npm install # ホストマシン上にも反映させるため（めんどくさいから対処法教えて）
 
 # コンテナの停止
 docker compose down
 
 # コンテナの再起動
-docker compose restart front
+docker compose restart frontend
 ```
 
 ## 開発フロー
@@ -74,6 +79,16 @@ main
 └── front/develop
     └── front/feature/***  # 作業ブランチ
     └── front/feature/***  # 作業ブランチ
+```
+
+### pullしたとき
+1. 依存関係に変更がある場合
+```bash
+cd front
+npm install
+```
+```bash
+docker compose exec frontend npm install
 ```
 
 ### 新機能の開発手順
