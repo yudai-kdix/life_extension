@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+import datetime
 
 app = Flask(__name__)
 
@@ -95,10 +96,10 @@ def create_character():
         "character_id": len(characters) + 1,
         "user_id": data["user_id"],
         "character_name": data["character_name"],
-        "age": data["age"],
-        "lifespan": data["lifespan"],
-        "health_points": data["health_points"],
-        "last_updated": data["last_updated"]
+        "age": 0,
+        "lifespan": 10,
+        "health_points": 10,
+        "last_updated": datetime.datetime.now()
     }
     characters.append(new_character)
     return jsonify(new_character), 201
@@ -118,6 +119,7 @@ def update_character(character_id):
     character = next((char for char in characters if char["character_id"] == character_id), None)
     if character:
         character.update(data)
+        character["last_updated"] = datetime.datetime.now()
         return jsonify(character)
     return jsonify({"error": "Character not found"}), 404
 
@@ -137,9 +139,7 @@ def create_action():
         "user_id": data["user_id"],
         "character_id": data["character_id"],
         "action_type": data["action_type"],
-        "description": data["description"],
-        "effect_on_lifespan": data["effect_on_lifespan"],
-        "action_time": data["action_time"]
+        "action_time": datetime.datetime.now()
     }
     actions.append(new_action)
     return jsonify(new_action), 201
