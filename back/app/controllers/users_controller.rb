@@ -20,6 +20,7 @@ class UsersController < ApplicationController
     head :no_content
   end
 
+  private
   def user_params
     params.require(:user).permit(:username, :email, :avatar_url)
   end
