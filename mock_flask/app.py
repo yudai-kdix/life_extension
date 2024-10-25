@@ -20,30 +20,30 @@ characters = [
         "character_id": 1,
         "user_id": 1,
         "character_name": "Hero",
-        "age": 25,
-        "lifespan": 80,
-        "health_points": 100,
+        "age": 5,
+        "lifespan": 10,
+        "health_points": 10,
+        "status": 1,
         "last_updated": "2024-10-24T15:30:00"
     },
     {
         "character_id": 2,
         "user_id": 1,
         "character_name": "Villain",
-        "age": 30,
-        "lifespan": 70,
-        "health_points": 90,
+        "age": 3,
+        "lifespan": 20,
+        "health_points": 10,
+        "status": 2,
         "last_updated": "2024-10-23T15:30:00"
     }
 ]
 
-actions = [
+actions = [      
     {
         "log_id": 1,
         "user_id": 1,
         "character_id": 1,
         "action_type": "食事",
-        "description": "キャラクターが食事を取った",
-        "effect_on_lifespan": 1,
         "action_time": "2024-10-24T13:00:00"
     }
 ]
@@ -99,6 +99,7 @@ def create_character():
         "age": 0,
         "lifespan": 10,
         "health_points": 10,
+        "status": 1,
         "last_updated": datetime.datetime.now()
     }
     characters.append(new_character)
