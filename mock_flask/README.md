@@ -1,11 +1,10 @@
 モックサーバー手順
 
-python -m venv venv 
-source venv/bin/activate
+最初
+sh build.sh
 
-pip install -r requirements.txt
-
-python app.py
+起動
+sh start.sh
 
 
 http://127.0.0.1:5000

@@ -1,9 +1,7 @@
 from flask import Flask, jsonify, request
-from flask_cors import CORS
 import datetime
-
+from character_manage import check_dead
 app = Flask(__name__)
-CORS(app)
 
 # モックデータ
 users = [
@@ -27,6 +25,7 @@ characters = [
         "health_points": 10,
         "status": 1,
         "last_updated": "2024-10-24T15:30:00"
+        , "created_at": "2024-10-24T15:30:00"
     },
     {
         "character_id": 2,
@@ -35,8 +34,9 @@ characters = [
         "age": 3,
         "lifespan": 20,
         "health_points": 10,
-        "status": 2,
+        "status": 1,
         "last_updated": "2024-10-23T15:30:00"
+        , "created_at": "2024-10-23T15:30:00"
     }
 ]
 
@@ -104,6 +104,7 @@ def create_character():
         "health_points": 10,
         "status": 1,
         "last_updated": datetime.datetime.now()
+        , "created_at": datetime.datetime.now()
     }
     characters.append(new_character)
     return jsonify(new_character), 201
@@ -112,6 +113,15 @@ def create_character():
 @app.route('/characters/<int:character_id>', methods=['GET'])
 def get_character(character_id):
     character = next((char for char in characters if char["character_id"] == character_id), None)
+    # 死亡判定を行う
+    user = next((user for user in users if user["user_id"] == character["user_id"]), None)
+    # XXX ここうまくいくかわからん
+    last_login = datetime.datetime.strptime(user["last_login"], "%Y-%m-%d")
+    if character:
+        if datetime.date.today() != last_login.date():
+            check_dead(character=character, user=user)
+        return jsonify(character)
+
     if character:
         return jsonify(character)
     return jsonify({"error": "Character not found"}), 404
@@ -125,7 +135,15 @@ def update_character(character_id):
         character.update(data)
         character["last_updated"] = datetime.datetime.now()
         return jsonify(character)
-    print(characters[0])
+    return jsonify({"error": "Character not found"}), 404
+
+# キャラクター死亡
+@app.route('/characters/<int:character_id>/dead', methods=['PUT'])
+def dead_character(character_id):
+    character = next((char for char in characters if char["character_id"] == character_id), None)
+    if character:
+        character["status"] = 0
+        return jsonify(character)
     return jsonify({"error": "Character not found"}), 404
 
 # キャラクター削除
