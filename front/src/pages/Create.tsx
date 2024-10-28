@@ -4,24 +4,27 @@ import { useCharacter } from '../contexts/CharacterContext';
 import { useAuth } from '../contexts/AuthContext';
 
 export function Create() {
-  console.log("/create");
+  console.log('/create');
   const [characterName, setCharacterName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { createCharacter, error, currentCharacter } = useCharacter();
+  const [isInitialized, setIsInitialized] = useState(false);
+  const { createCharacter, error, currentCharacter, fetchCharacter } = useCharacter();
   const navigate = useNavigate();
-  const { userInfo, token } = useAuth();
+  const { userInfo } = useAuth();
   const userId = userInfo?.id;
 
-  console.log("userInfo: ", userInfo);
-
+  useEffect(() => {
+    if (userId && !isInitialized) {
+      fetchCharacter(userId);
+      setIsInitialized(true);
+    }
+  }, [userId, isInitialized, fetchCharacter]);
 
   if (!userId) {
-    console.log("userIdがないため/sign-inにリダイレクト");
+    console.log('userIdがないため/sign-inにリダイレクト');
     return <Navigate to="/" replace />;
   }
 
-
-  // すでにキャラクターが存在する場合はホームにリダイレクト
   if (currentCharacter) {
     return <Navigate to="/" replace />;
   }
@@ -47,10 +50,7 @@ export function Create() {
         <h2 className="text-xl font-bold mb-6">新しいキャラクターを作成</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label
-              htmlFor="characterName"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label htmlFor="characterName" className="block text-sm font-medium text-gray-700 mb-1">
               キャラクター名
             </label>
             <input

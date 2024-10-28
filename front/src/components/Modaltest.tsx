@@ -8,8 +8,8 @@ const customStyles = {
     right: 'auto',
     bottom: 'auto',
     marginRight: '-50%',
-    transform: 'translate(-50%, -50%)'
-  }
+    transform: 'translate(-50%, -50%)',
+  },
 };
 
 Modal.setAppElement('#root');
@@ -18,7 +18,7 @@ function Modaltest() {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [modal2IsOpen, setModal2IsOpen] = useState(false);
 
-  const subtitle = "test";
+  const subtitle = 'test';
 
   function openModal() {
     setIsOpen(true);

@@ -12,7 +12,7 @@ export function ActionHistorySection() {
     }>
   >([]);
 
-  console.log("currentCharacter: ",currentCharacter?.character_name);
+  console.log('currentCharacter: ', currentCharacter?.character_name);
 
   useEffect(() => {
     const fetchActions = async () => {
@@ -55,13 +55,8 @@ export function ActionHistorySection() {
       ) : (
         <div className="divide-y">
           {actions.map((action) => (
-            <div
-              key={action.log_id}
-              className="py-4 flex items-center space-x-4"
-            >
-              <div className="text-2xl">
-                {getActionIcon(action.action_type)}
-              </div>
+            <div key={action.log_id} className="py-4 flex items-center space-x-4">
+              <div className="text-2xl">{getActionIcon(action.action_type)}</div>
               <div className="flex-1">
                 <div className="font-medium">{action.detail}</div>
                 <div className="text-sm text-gray-500">

@@ -7,14 +7,29 @@ import CharacterImages from '../components/CharacterImages';
 import { useAuth } from '../contexts/AuthContext';
 
 export function Home() {
-  const { currentCharacter, fetchUserCharacters, performAction } =
-    useCharacter();
+  const { currentCharacter, fetchCharacter, performAction } = useCharacter();
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [selectedAction, setSelectedAction] = useState<GameAction | null>(null);
   const [endAction, setEndAction] = useState(false);
   const [isLiveFlg, setIsLiveFlg] = useState(true);
-  const { userInfo, token } = useAuth();
+  const { userInfo } = useAuth();
   const userId = userInfo?.id;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (userId) {
+          await fetchCharacter(userId);
+        }
+      } catch (error) {
+        console.error('Failed to fetch characters: ', error);
+      } finally {
+        setIsInitialLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [userId, fetchCharacter]);
 
   if (!userId) {
     return <Navigate to="/sign-in" replace />;
@@ -24,20 +39,6 @@ export function Home() {
     setIsLiveFlg(false);
     console.log(isLiveFlg);
   }
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await fetchUserCharacters(userId);
-      } catch (error) {
-        console.error('Failed to fetch characters: ', error);
-      } finally {
-        setIsInitialLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [userId, fetchUserCharacters]);
 
   if (isInitialLoading) {
     return (
@@ -91,9 +92,7 @@ export function Home() {
                   </div>
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-sm font-medium">HP</span>
-                    <span className="text-sm">
-                      {currentCharacter.health_points}/15
-                    </span>
+                    <span className="text-sm">{currentCharacter.health_points}/15</span>
                   </div>
                   <div className="w-32 h-2 bg-gray-200 rounded-full">
                     <div
@@ -107,9 +106,7 @@ export function Home() {
 
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">寿命</span>
-                  <span className="text-sm">
-                    {Math.floor(currentCharacter.lifespan)}年
-                  </span>
+                  <span className="text-sm">{Math.floor(currentCharacter.lifespan)}年</span>
                 </div>
 
                 <div className="flex justify-between items-center">
@@ -122,11 +119,7 @@ export function Home() {
             {/* 行動一覧 */}
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4">
               {GAME_ACTIONS.map((action) => (
-                <ActionButton
-                  key={action.type}
-                  action={action}
-                  onClick={handleActionSelect}
-                />
+                <ActionButton key={action.type} action={action} onClick={handleActionSelect} />
               ))}
             </div>
 
@@ -134,9 +127,7 @@ export function Home() {
             {selectedAction && (
               <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
                 <div className="bg-white rounded-lg p-6 max-w-sm w-full">
-                  <h3 className="text-lg font-semibold mb-4">
-                    {selectedAction.type}の詳細を選択
-                  </h3>
+                  <h3 className="text-lg font-semibold mb-4">{selectedAction.type}の詳細を選択</h3>
                   <div className="space-y-2">
                     {selectedAction.details.map((detail) => (
                       <button
@@ -145,9 +136,7 @@ export function Home() {
                         className="w-full p-3 text-left hover:bg-gray-100 rounded-lg transition-colors"
                       >
                         <div className="font-medium">{detail.label}</div>
-                        <div className="text-sm text-gray-600">
-                          {detail.description}
-                        </div>
+                        <div className="text-sm text-gray-600">{detail.description}</div>
                       </button>
                     ))}
                   </div>
@@ -163,19 +152,13 @@ export function Home() {
 
             {/* キャラクター表示エリア */}
             <div className="flex-1 flex items-center justify-center">
-              <div
-                className="w-32 h-32 rounded-full flex items-center justify-center"
-                id="myImage"
-              >
+              <div className="w-32 h-32 rounded-full flex items-center justify-center" id="myImage">
                 <CharacterImages character={currentCharacter} />
               </div>
             </div>
           </div>
 
-          <div
-            className="pointer-events-none absolute inset-0"
-            id="effects-container"
-          />
+          <div className="pointer-events-none absolute inset-0" id="effects-container" />
         </div>
       ) : (
         <div className="absolute inset-0 bg-no-repeat bg-cover bg-center bg-[url('/src/assets/images/b.png')]">
@@ -207,9 +190,7 @@ export function Home() {
 
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">寿命</span>
-                  <span className="text-sm">
-                    {Math.floor(currentCharacter.lifespan)}年
-                  </span>
+                  <span className="text-sm">{Math.floor(currentCharacter.lifespan)}年</span>
                 </div>
 
                 <div className="flex justify-between items-center">
@@ -222,11 +203,7 @@ export function Home() {
             {/* 行動一覧 */}
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4">
               {GAME_ACTIONS.map((action) => (
-                <ActionButton
-                  key={action.type}
-                  action={action}
-                  onClick={handleActionSelect}
-                />
+                <ActionButton key={action.type} action={action} onClick={handleActionSelect} />
               ))}
             </div>
 
@@ -234,9 +211,7 @@ export function Home() {
             {selectedAction && (
               <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
                 <div className="bg-white rounded-lg p-6 max-w-sm w-full">
-                  <h3 className="text-lg font-semibold mb-4">
-                    {selectedAction.type}の詳細を選択
-                  </h3>
+                  <h3 className="text-lg font-semibold mb-4">{selectedAction.type}の詳細を選択</h3>
                   <div className="space-y-2">
                     {selectedAction.details.map((detail) => (
                       <button
@@ -245,9 +220,7 @@ export function Home() {
                         className="w-full p-3 text-left hover:bg-gray-100 rounded-lg transition-colors"
                       >
                         <div className="font-medium">{detail.label}</div>
-                        <div className="text-sm text-gray-600">
-                          {detail.description}
-                        </div>
+                        <div className="text-sm text-gray-600">{detail.description}</div>
                       </button>
                     ))}
                   </div>
@@ -263,19 +236,13 @@ export function Home() {
 
             {/* キャラクター表示エリア */}
             <div className="flex-1 flex items-center justify-center">
-              <div
-                className="w-32 h-32 rounded-full flex items-center justify-center"
-                id="myImage"
-              >
+              <div className="w-32 h-32 rounded-full flex items-center justify-center" id="myImage">
                 <CharacterImages character={currentCharacter} />
               </div>
             </div>
           </div>
 
-          <div
-            className="pointer-events-none absolute inset-0"
-            id="effects-container"
-          />
+          <div className="pointer-events-none absolute inset-0" id="effects-container" />
         </div>
       )}
     </>

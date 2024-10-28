@@ -1,4 +1,7 @@
-// src/types/api.ts
+import { createContext, useState, useContext, useCallback, ReactNode } from 'react';
+import axios from 'axios';
+import { useAuth } from './AuthContext';
+import { ActionType, GameAction } from '../constants/actions';
 export interface User {
   user_id: number;
   username: string;
@@ -22,22 +25,10 @@ export interface Action {
   log_id: number;
   user_id: number;
   character_id: number;
-  action_type: '食事' | '睡眠' | '運動';
+  action_type: ActionType;
   detail: string;
   action_time: string;
 }
-
-import {
-  createContext,
-  useState,
-  useContext,
-  useCallback,
-  ReactNode,
-} from 'react';
-import axios from 'axios';
-import { useAuth } from './AuthContext';
-import { GameAction } from '../constants/actions';
-// import { User, Character, Action } from '../types/api';
 
 interface CharacterContextType {
   characters: Character[];
@@ -45,13 +36,11 @@ interface CharacterContextType {
   isLoading: boolean;
   error: string | null;
   fetchUserCharacters: (userId: number) => Promise<void>;
-  fetchCharacter: (characterId: number) => Promise<void>;
+  fetchCharacter: (userId: number) => Promise<void>;
   createCharacter: (userId: number, characterName: string) => Promise<void>;
-  performAction: (
-    actionType: Action['action_type'],
-    detail: string,
-  ) => Promise<void>;
+  performAction: (action: GameAction, selectedDetail: { value: string }) => Promise<void>;
   fetchActions: (characterId: number) => Promise<void>;
+  resetCharacterState: () => void;
 }
 
 // 初期値の定義
@@ -65,6 +54,7 @@ const initialContext: CharacterContextType = {
   createCharacter: async () => {},
   performAction: async () => {},
   fetchActions: async () => {},
+  resetCharacterState: async () => {},
 };
 
 // CharacterContextの作成
@@ -74,9 +64,7 @@ const API_URL = 'http://localhost:3000';
 
 export function CharacterProvider({ children }: { children: ReactNode }) {
   const [characters, setCharacters] = useState<Character[]>([]);
-  const [currentCharacter, setCurrentCharacter] = useState<Character | null>(
-    null,
-  );
+  const [currentCharacter, setCurrentCharacter] = useState<Character | null>(null);
   const [actions, setActions] = useState<Action[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -87,88 +75,85 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await axios.get(
-        `${API_URL}/users/${userId}/characters`,
-        {
-          headers: {
-            Authorization: token?.Authorization,
-          },
+      const response = await axios.get(`${API_URL}/users/${userId}/characters`, {
+        headers: {
+          Authorization: token?.Authorization,
         },
-      );
+      });
 
       const characters = await response.data;
 
-      console.log("characters: ", characters);
+      console.log('characters: ', characters);
       setCharacters(characters);
-      console.log("currentCharacter: ", currentCharacter);
+      console.log('currentCharacter: ', currentCharacter);
       if (characters.length > 0) {
         setCurrentCharacter(characters[0]);
       }
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : '不明なエラーが発生しました',
-      );
+      setError(err instanceof Error ? err.message : '不明なエラーが発生しました');
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  const fetchCharacter = useCallback(async (characterId: number) => {
+  const fetchCharacter = useCallback(async (userId: number) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_URL}/characters/${characterId}`);
-      if (!response.ok) throw new Error('キャラクター情報の取得に失敗しました');
+      const response = await axios.get(`${API_URL}/users/${userId}/characters`);
+      const characters = await response.data;
 
-      const character = await response.json();
-      setCurrentCharacter(character);
+      if (characters.length > 0) {
+        setCurrentCharacter(characters[0]);
+      } else {
+        throw new Error('キャラクターを作成していません');
+      }
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : '不明なエラーが発生しました',
-      );
+      setError(err instanceof Error ? err.message : '不明なエラーが発生しました');
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  const createCharacter = useCallback(
-    async (userId: number, characterName: string) => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const data = {
-          character_name: characterName,
-        };
-        console.log("token: ", token?.Authorization);
-        const response = await axios.post(`${API_URL}/characters`, data, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: token?.Authorization,
-          },
-        });
+  const createCharacter = useCallback(async (userId: number, characterName: string) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = {
+        character_name: characterName,
+      };
+      console.log('token: ', token?.Authorization);
+      const response = await axios.post(`${API_URL}/characters`, data, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token?.Authorization,
+        },
+      });
 
-        const created = await response.data;
-        console.log(created);
-        setCharacters([created]);
-        setCurrentCharacter(created);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : '不明なエラーが発生しました',
-        );
-        throw err;
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [],
-  );
+      const created = await response.data;
+      console.log(created);
+      setCharacters([created]);
+      setCurrentCharacter(created);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '不明なエラーが発生しました');
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const resetCharacterState = useCallback(() => {
+    console.log('resetキャラクター');
+    setCharacters([]);
+    setCurrentCharacter(null);
+  }, []);
 
   const performAction = useCallback(
     async (action: GameAction, selectedDetail: { value: string }) => {
       if (!currentCharacter) return;
       setIsLoading(true);
       setError(null);
-  
+
       try {
         // APIに送信するデータを準備
         const data = {
@@ -178,36 +163,32 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
           detail: selectedDetail.value,
         };
 
-        console.log("data: ", data);
-  
+        console.log('data: ', data);
+
         // /action_logsエンドポイントを呼び出し
         const response = await axios.post(`${API_URL}/action_logs`, data, {
           headers: { Authorization: token?.Authorization },
         });
-  
+
         // レスポンスから更新されたキャラクター情報を取得
         const character = await response.data;
 
-        console.log("character: ", character);
-  
+        console.log('character: ', character);
+
         // 現在のキャラクター情報を更新
         setCurrentCharacter(character);
-  
+
         // キャラクター一覧を更新
         setCharacters((prevCharacters) =>
-          prevCharacters.map((char) =>
-            char.id === character.id ? character : char,
-          ),
+          prevCharacters.map((char) => (char.id === character.id ? character : char)),
         );
-  
+
         // キャラクターが死亡した場合の処理
         if (character.status === 0) {
           setError('キャラクターが死亡しました');
         }
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : '不明なエラーが発生しました',
-        );
+        setError(err instanceof Error ? err.message : '不明なエラーが発生しました');
       } finally {
         setIsLoading(false);
       }
@@ -220,17 +201,13 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(
-        `${API_URL}/characters/${characterId}/actions`,
-      );
+      const response = await fetch(`${API_URL}/characters/${characterId}/actions`);
       if (!response.ok) throw new Error('行動履歴の取得に失敗しました');
 
       const data = await response.json();
       setActions(data);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : '不明なエラーが発生しました',
-      );
+      setError(err instanceof Error ? err.message : '不明なエラーが発生しました');
     } finally {
       setIsLoading(false);
     }
@@ -248,6 +225,7 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
         createCharacter,
         performAction,
         fetchActions,
+        resetCharacterState,
       }}
     >
       {children}

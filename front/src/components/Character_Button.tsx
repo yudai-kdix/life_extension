@@ -150,11 +150,7 @@ function CharacterImage({ character, onClick, text }: CharacterImageProps) {
           <div className="absolute bottom-0 overflow-x-auto left-1/4 right-1/4 md:left-1/4 md:right-1/4 lg:left-1/3 lg:right-1/3 m-auto">
             <ol className="flex grid-cols-6">
               {GAME_ACTIONS.map((action) => (
-                <ActionButton
-                  key={action.type}
-                  action={action}
-                  onClick={onClick}
-                />
+                <ActionButton key={action.type} action={action} onClick={onClick} />
               ))}
             </ol>
           </div>

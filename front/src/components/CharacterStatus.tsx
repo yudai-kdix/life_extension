@@ -7,9 +7,7 @@ export function CharacterStatus() {
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-xl font-bold mb-4">
-        {currentCharacter.character_name}
-      </h2>
+      <h2 className="text-xl font-bold mb-4">{currentCharacter.character_name}</h2>
       <div className="space-y-4">
         <div>
           <div className="flex justify-between mb-1">

@@ -7,13 +7,9 @@ import React, { useState, useEffect, useRef } from 'react';
 //   10: '/src/assets/images/tako_yonger_happy.png', // HPが10以上のとき
 // }
 
-
-
-export function ImageChangeButtonProps(){
+export function ImageChangeButtonProps() {
   const [isImageChanged, setIsImageChanged] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
-
-
 
   const handleClick = () => {
     setIsImageChanged(true);
@@ -36,12 +32,16 @@ export function ImageChangeButtonProps(){
       <button onClick={handleClick}>画像変更</button>
       <img
         ref={imageRef}
-        src={isImageChanged ? "/src/assets/images/tako_yonger_happy.png" : "/src/assets/images/tako_yonger_normal.png"}
+        src={
+          isImageChanged
+            ? '/src/assets/images/tako_yonger_happy.png'
+            : '/src/assets/images/tako_yonger_normal.png'
+        }
         alt="変更される画像"
         className="transition duration-500 ease-in-out"
       />
     </div>
   );
-};
+}
 
 export default ImageChangeButtonProps;

@@ -8,15 +8,14 @@ import { useAuth } from '../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 
 export function MyPage() {
-  const { fetchUserCharacters, currentCharacter, isLoading, error } =
-    useCharacter();
-    const {userInfo} = useAuth();
-    const userId = userInfo?.id;
+  const { fetchUserCharacters, currentCharacter, isLoading, error } = useCharacter();
+  const { userInfo } = useAuth();
+  const userId = userInfo?.id;
 
-    if (!userId) {
-      console.log("userIdがないため/sign-inにリダイレクト");
-      return <Navigate to="/" replace />;
-    }
+  if (!userId) {
+    console.log('userIdがないため/sign-inにリダイレクト');
+    return <Navigate to="/" replace />;
+  }
 
   useEffect(() => {
     fetchUserCharacters(userId);
@@ -41,7 +40,12 @@ export function MyPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid gap-8">
-        <UserProfile user_id={userInfo.id} user_name={userInfo.username} created_at={userInfo.created_at} email={userInfo.email}/>
+        <UserProfile
+          user_id={userInfo.id}
+          user_name={userInfo.username}
+          created_at={userInfo.created_at}
+          email={userInfo.email}
+        />
         <CharacterSection />
         <ActionHistorySection />
       </div>

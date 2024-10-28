@@ -1,12 +1,7 @@
-import React, {
-  createContext,
-  useState,
-  useEffect,
-  useCallback,
-  useContext,
-} from 'react';
+import React, { createContext, useState, useEffect, useCallback, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useCharacter } from './CharacterContext';
 
 export type UserInfo = {
   id: number;
@@ -46,16 +41,11 @@ export type AuthContextType = {
   updateUserProfile: (name: string) => Promise<void>;
 };
 
-export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined,
-);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const API_URL = 'http://localhost:3000';
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  console.log("AuthProviderレンダリング");
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [token, setToken] = useState<Token | null>(() => {
     const storedToken = localStorage.getItem('token');
     return storedToken ? JSON.parse(storedToken) : null;
@@ -66,6 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     return storedUserInfo ? JSON.parse(storedUserInfo) : null;
   });
 
+  const { resetCharacterState } = useCharacter();
   const navigate = useNavigate();
 
   const fetchUserInfo = useCallback(async () => {
@@ -77,13 +68,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     try {
       const response = await axios.get(`${API_URL}/users`, {
+        //usersエンドポイントが何をレスポンスするのか知らないから後で書く
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       const newUserInfo: UserInfo = {
-        name: response.data.name,
-        iconUrl: response.data.iconUrl,
+        username: response.data.name,
+        avatar_url: response.data.iconUrl,
       };
       setUserInfo(newUserInfo);
       sessionStorage.setItem('userInfo', JSON.stringify(newUserInfo));
@@ -99,7 +91,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       localStorage.setItem('token', JSON.stringify(token));
       // fetchUserInfo();
     } else {
-      console.log("AuthContext: remove走る")
       localStorage.removeItem('token');
       sessionStorage.removeItem('userInfo');
       setUserInfo(null);
@@ -114,21 +105,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   ) => {
     try {
       const response = await axios.post(`${API_URL}/users`, {
-        
-          // 後々userで囲まなくてもいいようにしたい
-          username,
-          email,
-          password,
-          password_confirmation,
-        
+        // 後々userで囲まなくてもいいようにしたい
+        username,
+        email,
+        password,
+        password_confirmation,
       });
-      console.log("SignUp response: ", response.data);
+      console.log('SignUp response: ', response.data);
       const newToken = response.data.token;
       const newUserInfo: UserInfo = response.data.user;
       setToken(newToken);
       setUserInfo(newUserInfo);
       sessionStorage.setItem('userInfo', JSON.stringify(newUserInfo));
-      navigate("/create")
+      navigate('/create');
     } catch (error) {
       console.error('Sign up failed:', error);
       throw error;
@@ -141,13 +130,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         email,
         password,
       });
-      console.log("SignIn response: ", response.data);
+      console.log('SignIn response: ', response.data);
       const newToken: Token = response.data.token;
       const newUserInfo: UserInfo = response.data.user;
       setToken(newToken);
       setUserInfo(newUserInfo);
       sessionStorage.setItem('userInfo', JSON.stringify(newUserInfo));
-      navigate("/create")
+      navigate('/create');
     } catch (error) {
       console.error('Sign in failed:', error);
       throw error;
@@ -156,6 +145,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // 後でやる
   const signOut = () => {
+    console.log('signout');
+    resetCharacterState();
+    console.log('resetCharacter実行');
     setToken(null);
     setUserInfo(null);
     localStorage.removeItem('token');
@@ -201,7 +193,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         signUp,
         signIn,
         signOut,
-
         fetchUserInfo,
         updateUserProfile,
       }}

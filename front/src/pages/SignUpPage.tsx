@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 
 export const SignUp = () => {
   const [name, setName] = useState('');
@@ -9,7 +9,11 @@ export const SignUp = () => {
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signUp } = useAuth();
+  const { userInfo, signUp } = useAuth();
+
+  if (userInfo?.id) {
+    return <Navigate to="/" replace />;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +43,10 @@ export const SignUp = () => {
           </h2>
         </div>
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <div
+            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+            role="alert"
+          >
             <span className="block sm:inline">{error}</span>
           </div>
         )}

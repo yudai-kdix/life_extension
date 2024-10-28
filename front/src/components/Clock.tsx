@@ -17,11 +17,7 @@ function Clock() {
     return () => clearInterval(intervalId);
   }, []);
 
-  return (
-    <div className="text-center text-xl font-bold">
-      {time.toLocaleTimeString()}
-    </div>
-  );
+  return <div className="text-center text-xl font-bold">{time.toLocaleTimeString()}</div>;
 }
 
 export default Clock;

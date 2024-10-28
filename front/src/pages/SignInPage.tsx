@@ -1,13 +1,23 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
+import { useCharacter } from '../contexts/CharacterContext';
 
 export const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  const { userInfo, signIn } = useAuth();
+  const { currentCharacter } = useCharacter();
+
+  if (currentCharacter) {
+    console.log('currentCharacterあり');
+  }
+
+  if (userInfo?.id) {
+    return <Navigate to="/" replace />;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +44,10 @@ export const SignIn = () => {
           </h2>
         </div>
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <div
+            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+            role="alert"
+          >
             <span className="block sm:inline">{error}</span>
           </div>
         )}
@@ -88,7 +101,10 @@ export const SignIn = () => {
             </div>
 
             <div className="text-sm">
-              <Link to="/forgot-password" className="font-medium text-indigo-600 hover:text-indigo-500">
+              <Link
+                to="/forgot-password"
+                className="font-medium text-indigo-600 hover:text-indigo-500"
+              >
                 Forgot your password?
               </Link>
             </div>
