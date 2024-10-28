@@ -1,17 +1,36 @@
-import React from 'react'
-import { createRoot } from 'react-dom/client'
-import { RouterProvider, createBrowserRouter, createRoutesFromElements, Route, Navigate } from 'react-router-dom'
-import { CharacterProvider } from './contexts/CharacterContext'
-import { Layout } from './components/Layout'
-import { Home } from './pages/Home'
-import { Create } from './pages/Create'
-import { ErrorPage } from './pages/ErrorPage'
-import './index.css'
-import { MyPage } from './pages/MyPage'
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import {
+  RouterProvider,
+  createBrowserRouter,
+  createRoutesFromElements,
+  Route,
+  Navigate,
+} from 'react-router-dom';
+import { CharacterProvider } from './contexts/CharacterContext';
+import { Layout } from './components/Layout';
+import { Home } from './pages/Home';
+import { Create } from './pages/Create';
+import { ErrorPage } from './pages/ErrorPage';
+import './index.css';
+import { MyPage } from './pages/MyPage';
+import { AuthProvider } from './contexts/AuthContext';
+import { SignUp } from './pages/SignUpPage';
+import { SignIn } from './pages/SignInPage';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/" element={<Layout />} errorElement={<ErrorPage />}>
+    <Route
+      path="/"
+      element={
+        <AuthProvider>
+          <CharacterProvider>
+            <Layout />
+          </CharacterProvider>
+        </AuthProvider>
+      }
+      errorElement={<ErrorPage />}
+    >
       <Route
         index
         element={<Home />}
@@ -33,16 +52,16 @@ const router = createBrowserRouter(
           return { name: formData.get('name') };
         }}
       />
-       <Route path="my-page" element={<MyPage />} />
+      <Route path="my-page" element={<MyPage />} />
+      <Route path="sign-up" element={<SignUp />} />
+      <Route path="sign-in" element={<SignIn />} />
       <Route path="*" element={<Navigate to="/" replace />} />
-    </Route>
-  )
+    </Route>,
+  ),
 );
 
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <CharacterProvider>
-      <RouterProvider router={router} />
-    </CharacterProvider>
+    <RouterProvider router={router} />
   </React.StrictMode>,
-)
+);

@@ -1,4 +1,4 @@
-import { useCharacter } from "../contexts/CharacterContext";
+import { useCharacter } from '../contexts/CharacterContext';
 
 // Character Section
 export function CharacterSection() {
@@ -31,27 +31,34 @@ export function CharacterSection() {
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">キャラクター情報</h2>
         <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
-          最終更新: {new Date(currentCharacter.last_updated).toLocaleString()}
+          最終更新: {currentCharacter.last_updated ? ( new Date(currentCharacter.last_updated).toLocaleString()): "?"}
         </span>
       </div>
 
       <div className="grid gap-6">
         <div>
           <div className="flex justify-between mb-2">
-            <span className="font-medium">{currentCharacter.character_name}</span>
+            <span className="font-medium">
+              {currentCharacter.character_name}
+            </span>
             <span>Lv. {Math.floor(currentCharacter.age / 5) + 1}</span>
           </div>
-          
+
           {/* HP */}
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span>HP</span>
-              <span>{currentCharacter.health_points}/10</span>
+              <span>{Math.ceil(currentCharacter.health_points)}/10</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div
-                className={getStatusBarStyle(currentCharacter.health_points, 10)}
-                style={{ width: `${(currentCharacter.health_points / 10) * 100}%` }}
+                className={getStatusBarStyle(
+                  currentCharacter.health_points,
+                  10,
+                )}
+                style={{
+                  width: `${(currentCharacter.health_points / 15) * 100}%`,
+                }}
               />
             </div>
           </div>
@@ -60,11 +67,15 @@ export function CharacterSection() {
           <div className="grid grid-cols-2 gap-4 mt-4">
             <div>
               <div className="text-sm text-gray-500">年齢</div>
-              <div className="text-lg font-medium">{currentCharacter.age}歳</div>
+              <div className="text-lg font-medium">
+                {currentCharacter.age}歳
+              </div>
             </div>
             <div>
               <div className="text-sm text-gray-500">寿命</div>
-              <div className="text-lg font-medium">{currentCharacter.lifespan}年</div>
+              <div className="text-lg font-medium">
+                {Math.floor(currentCharacter.lifespan)}年
+              </div>
             </div>
           </div>
         </div>

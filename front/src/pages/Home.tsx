@@ -1,29 +1,43 @@
 import { Navigate } from 'react-router-dom';
 import { useCharacter } from '../contexts/CharacterContext';
 import { useEffect, useState } from 'react';
+import { ActionButton } from '../components/ActionButton';
+import { ActionType, GAME_ACTIONS, GameAction } from '../constants/actions';
+import CharacterImages from '../components/CharacterImages';
+import { useAuth } from '../contexts/AuthContext';
 
 export function Home() {
-  const { currentCharacter, fetchUserCharacters, performAction } = useCharacter();
+  const { currentCharacter, fetchUserCharacters, performAction } =
+    useCharacter();
   const [isInitialLoading, setIsInitialLoading] = useState(true);
-  const userId = 1; // 実際の実装では認証から取得
+  const [selectedAction, setSelectedAction] = useState<GameAction | null>(null);
+  const [endAction, setEndAction] = useState(false);
+  const [isLiveFlg, setIsLiveFlg] = useState(true);
+  const { userInfo, token } = useAuth();
+  const userId = userInfo?.id;
 
-  console.log("currentCharacter: ", currentCharacter);
+  if (!userId) {
+    return <Navigate to="/sign-in" replace />;
+  }
+
+  if (currentCharacter?.status === 0 && isLiveFlg) {
+    setIsLiveFlg(false);
+    console.log(isLiveFlg);
+  }
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         await fetchUserCharacters(userId);
       } catch (error) {
-        console.error("Failed to fetch characters: ", error);
+        console.error('Failed to fetch characters: ', error);
       } finally {
         setIsInitialLoading(false);
       }
-    }
+    };
 
     fetchData();
   }, [userId, fetchUserCharacters]);
-
- 
 
   if (isInitialLoading) {
     return (
@@ -33,87 +47,237 @@ export function Home() {
     );
   }
 
-  const actions = [
-    { type: '食事' as const, icon: '🍖', description: 'HPが回復し、寿命が延びます' },
-    { type: '睡眠' as const, icon: '😴', description: 'HPが大きく回復し、寿命が延びます' },
-    { type: '運動' as const, icon: '🏃', description: 'HPが回復しますが、寿命が減ります' },
-  ];
-
   if (!currentCharacter) {
+    console.log('カレントキャラクターがないため、/createにリダイレクト');
     return <Navigate to="/create" replace />;
   }
 
+  const handleActionSelect = (action: GameAction) => {
+    setSelectedAction(action);
+  };
+
+  const handleActionDetailSelect = async (detail: { value: string }) => {
+    if (selectedAction) {
+      try {
+        await performAction(selectedAction, detail);
+      } catch (error) {
+        console.error('Action failed:', error);
+      } finally {
+        setSelectedAction(null); // モーダルを閉じる
+      }
+    }
+  };
+
+  const end = () => {
+    setEndAction(true);
+    console.log(endAction);
+  };
+
+  console.log('home, currentCharacter: ', currentCharacter);
+
   return (
-    // 画面全体のコンテナ
-    <div className="absolute inset-0 bg-gray-100">
-      {/* 背景画像（仮） */}
-      <div className="absolute inset-0 bg-gradient-to-b from-blue-200 to-blue-400" />
+    <>
+      {isLiveFlg ? (
+        <div className="absolute inset-0 bg-no-repeat bg-cover bg-center bg-[url('/src/assets/images/b.png')]">
+          <div className="absolute inset-0" />
 
-      {/* メインコンテンツ */}
-      <div className="relative h-full flex flex-col">
-        {/* ステータス表示（右上） */}
-        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-4">
-          <div className="space-y-3">
-            {/* HP */}
-            <div>
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-sm font-medium">HP</span>
-                <span className="text-sm">{currentCharacter.health_points}/10</span>
-              </div>
-              <div className="w-32 h-2 bg-gray-200 rounded-full">
-                <div
-                  className="h-full bg-green-500 rounded-full transition-all duration-300"
-                  style={{ width: `${(currentCharacter.health_points / 10) * 100}%` }}
-                />
-              </div>
-            </div>
+          <div className="relative h-full flex flex-col">
+            {/* ステータス表示（右上） */}
+            <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-4">
+              <div className="space-y-3">
+                <div>
+                  <div className="font-semibold mb-2 border-b-2">
+                    {currentCharacter.character_name}
+                  </div>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-sm font-medium">HP</span>
+                    <span className="text-sm">
+                      {currentCharacter.health_points}/15
+                    </span>
+                  </div>
+                  <div className="w-32 h-2 bg-gray-200 rounded-full">
+                    <div
+                      className="h-full bg-green-500 rounded-full transition-all duration-300"
+                      style={{
+                        width: `${(currentCharacter.health_points / 15) * 100}%`,
+                      }}
+                    />
+                  </div>
+                </div>
 
-            {/* 寿命 */}
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">寿命</span>
-              <span className="text-sm">{currentCharacter.lifespan}年</span>
-            </div>
-
-            {/* 年齢 */}
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">年齢</span>
-              <span className="text-sm">{currentCharacter.age}歳</span>
-            </div>
-          </div>
-        </div>
-
-        {/* キャラクター表示エリア（中央） */}
-        <div className="flex-1 flex items-center justify-center">
-          {/* モックキャラクター */}
-          <div className="w-32 h-32 bg-gray-300 rounded-full flex items-center justify-center">
-            キャラクター
-          </div>
-        </div>
-
-        {/* アクションボタン（下部） */}
-        <div className="p-4">
-          <div className="max-w-md mx-auto bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-4">
-            <div className="grid grid-cols-3 gap-3">
-              {actions.map(action => (
-                <button
-                  key={action.type}
-                  onClick={() => performAction(action.type)}
-                  className="flex flex-col items-center p-3 bg-white rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  <span className="text-2xl mb-1">{action.icon}</span>
-                  <span className="text-sm font-medium">{action.type}</span>
-                  <span className="text-xs text-gray-500 text-center mt-1">
-                    {action.description}
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">寿命</span>
+                  <span className="text-sm">
+                    {Math.floor(currentCharacter.lifespan)}年
                   </span>
-                </button>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">年齢</span>
+                  <span className="text-sm">{currentCharacter.age}歳</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 行動一覧 */}
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4">
+              {GAME_ACTIONS.map((action) => (
+                <ActionButton
+                  key={action.type}
+                  action={action}
+                  onClick={handleActionSelect}
+                />
               ))}
             </div>
-          </div>
-        </div>
-      </div>
 
-      {/* アニメーションエフェクト用のコンテナ（オプション） */}
-      <div className="pointer-events-none absolute inset-0" id="effects-container" />
-    </div>
+            {/* モーダル */}
+            {selectedAction && (
+              <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+                <div className="bg-white rounded-lg p-6 max-w-sm w-full">
+                  <h3 className="text-lg font-semibold mb-4">
+                    {selectedAction.type}の詳細を選択
+                  </h3>
+                  <div className="space-y-2">
+                    {selectedAction.details.map((detail) => (
+                      <button
+                        key={detail.value}
+                        onClick={() => handleActionDetailSelect(detail)}
+                        className="w-full p-3 text-left hover:bg-gray-100 rounded-lg transition-colors"
+                      >
+                        <div className="font-medium">{detail.label}</div>
+                        <div className="text-sm text-gray-600">
+                          {detail.description}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => setSelectedAction(null)}
+                    className="mt-4 w-full p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                  >
+                    キャンセル
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* キャラクター表示エリア */}
+            <div className="flex-1 flex items-center justify-center">
+              <div
+                className="w-32 h-32 rounded-full flex items-center justify-center"
+                id="myImage"
+              >
+                <CharacterImages character={currentCharacter} />
+              </div>
+            </div>
+          </div>
+
+          <div
+            className="pointer-events-none absolute inset-0"
+            id="effects-container"
+          />
+        </div>
+      ) : (
+        <div className="absolute inset-0 bg-no-repeat bg-cover bg-center bg-[url('/src/assets/images/b.png')]">
+          <div className="absolute inset-0" />
+
+          <div className="relative h-full flex flex-col">
+            {/* ステータス表示（右上） */}
+            <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-4">
+              <div className="space-y-3">
+                <div>
+                  <div className="font-semibold mb-2 border-b-2">
+                    {currentCharacter.character_name}
+                  </div>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-sm font-medium">HP</span>
+                    <span className="text-sm">
+                      {Number(currentCharacter.health_points.toFixed(2))}/15
+                    </span>
+                  </div>
+                  <div className="w-32 h-2 bg-gray-200 rounded-full">
+                    <div
+                      className="h-full bg-green-500 rounded-full transition-all duration-300"
+                      style={{
+                        width: `${(currentCharacter.health_points / 15) * 100}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">寿命</span>
+                  <span className="text-sm">
+                    {Math.floor(currentCharacter.lifespan)}年
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">年齢</span>
+                  <span className="text-sm">{currentCharacter.age}歳</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 行動一覧 */}
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4">
+              {GAME_ACTIONS.map((action) => (
+                <ActionButton
+                  key={action.type}
+                  action={action}
+                  onClick={handleActionSelect}
+                />
+              ))}
+            </div>
+
+            {/* モーダル */}
+            {selectedAction && (
+              <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+                <div className="bg-white rounded-lg p-6 max-w-sm w-full">
+                  <h3 className="text-lg font-semibold mb-4">
+                    {selectedAction.type}の詳細を選択
+                  </h3>
+                  <div className="space-y-2">
+                    {selectedAction.details.map((detail) => (
+                      <button
+                        key={detail.value}
+                        onClick={() => handleActionDetailSelect(detail)}
+                        className="w-full p-3 text-left hover:bg-gray-100 rounded-lg transition-colors"
+                      >
+                        <div className="font-medium">{detail.label}</div>
+                        <div className="text-sm text-gray-600">
+                          {detail.description}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => setSelectedAction(null)}
+                    className="mt-4 w-full p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                  >
+                    キャンセル
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* キャラクター表示エリア */}
+            <div className="flex-1 flex items-center justify-center">
+              <div
+                className="w-32 h-32 rounded-full flex items-center justify-center"
+                id="myImage"
+              >
+                <CharacterImages character={currentCharacter} />
+              </div>
+            </div>
+          </div>
+
+          <div
+            className="pointer-events-none absolute inset-0"
+            id="effects-container"
+          />
+        </div>
+      )}
+    </>
   );
 }

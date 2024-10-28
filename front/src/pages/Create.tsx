@@ -1,13 +1,25 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useCharacter } from '../contexts/CharacterContext';
+import { useAuth } from '../contexts/AuthContext';
 
 export function Create() {
+  console.log("/create");
   const [characterName, setCharacterName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { createCharacter, error, currentCharacter } = useCharacter();
   const navigate = useNavigate();
-  const userId = 1; // 実際の実装では認証から取得
+  const { userInfo, token } = useAuth();
+  const userId = userInfo?.id;
+
+  console.log("userInfo: ", userInfo);
+
+
+  if (!userId) {
+    console.log("userIdがないため/sign-inにリダイレクト");
+    return <Navigate to="/" replace />;
+  }
+
 
   // すでにキャラクターが存在する場合はホームにリダイレクト
   if (currentCharacter) {
@@ -35,8 +47,8 @@ export function Create() {
         <h2 className="text-xl font-bold mb-6">新しいキャラクターを作成</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label 
-              htmlFor="characterName" 
+            <label
+              htmlFor="characterName"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
               キャラクター名
@@ -54,11 +66,7 @@ export function Create() {
             />
           </div>
 
-          {error && (
-            <div className="text-sm text-red-600">
-              {error}
-            </div>
-          )}
+          {error && <div className="text-sm text-red-600">{error}</div>}
 
           <div className="text-sm text-gray-500">
             <h3 className="font-medium mb-2">初期ステータス:</h3>

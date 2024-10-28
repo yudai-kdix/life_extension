@@ -1,13 +1,23 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useCharacter } from '../contexts/CharacterContext';
+import { useAuth } from '../contexts/AuthContext';
+import Clock from './Clock';
+import Test from './TimeJudge';
 
 export function Header() {
   const location = useLocation();
   const { currentCharacter } = useCharacter();
+  const {userInfo, signOut} = useAuth();
+
+  const handleSignOut = () => {
+    signOut()
+  }
 
   const navigation = [
     { name: 'ホーム', path: '/' },
     { name: 'マイページ', path: '/my-page' },
+    { name: 'サインイン', path: '/sign-in' },
+    { name: 'サインアップ', path: '/sign-up' },
   ];
 
   return (
@@ -15,12 +25,9 @@ export function Header() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           {/* Logo/Title */}
-          <div className="flex items-center">
-            <h1 className="text-xl font-bold text-gray-900">
-              <Link to="/" className="hover:text-blue-600 transition-colors">
-                Life Extension
-              </Link>
-            </h1>
+          <div className='flex space-x-2'>
+            {/* <p>userid:{userInfo?.id}</p>
+            <p>name:{userInfo?.username}</p> */}
           </div>
 
           {/* Navigation */}
@@ -30,10 +37,11 @@ export function Header() {
                 key={item.path}
                 to={item.path}
                 className={`
-                  text-sm font-medium transition-colors
-                  ${location.pathname === item.path
-                    ? 'text-blue-600'
-                    : 'text-gray-600 hover:text-blue-600'
+                  text-xs font-medium transition-colors
+                  ${
+                    location.pathname === item.path
+                      ? 'text-blue-600'
+                      : 'text-gray-600 hover:text-blue-600'
                   }
                 `}
               >
@@ -41,22 +49,26 @@ export function Header() {
               </Link>
             ))}
           </nav>
+          <div>
+            <button className='hover:bg-gray-300 p-2 rounded-md text-xs' onClick={handleSignOut}>サインアウト</button>
+          </div>
 
           {/* Character Status Summary */}
           <div className="flex items-center space-x-4">
             {currentCharacter ? (
               <div className="flex items-center space-x-3 py-1 px-3 bg-gray-50 rounded-full">
-                <span className="text-sm font-medium text-gray-600">
-                  {currentCharacter.character_name}
-                </span>
                 <div className="flex items-center space-x-1 text-sm">
                   <span className="text-gray-500">HP:</span>
-                  <span className={`font-medium ${
-                    currentCharacter.health_points > 7 ? 'text-green-600' :
-                    currentCharacter.health_points > 3 ? 'text-yellow-600' :
-                    'text-red-600'
-                  }`}>
-                    {currentCharacter.health_points}/10
+                  <span
+                    className={`font-medium ${
+                      currentCharacter.health_points > 7
+                        ? 'text-green-600'
+                        : currentCharacter.health_points > 3
+                          ? 'text-yellow-600'
+                          : 'text-red-600'
+                    }`}
+                  >
+                    {currentCharacter.health_points}/15
                   </span>
                 </div>
               </div>
@@ -68,6 +80,12 @@ export function Header() {
                 キャラクター作成
               </Link>
             )}
+          </div>
+          <div>
+            <Clock></Clock>
+          </div>
+          <div>
+            <Test></Test>
           </div>
         </div>
       </div>
