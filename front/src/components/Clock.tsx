@@ -4,12 +4,6 @@ function Clock() {
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
-    console.log(time.toLocaleTimeString());
-
-    if ('1:05:00' === time.toLocaleTimeString()) {
-      console.log('aaa');
-    }
-
     const intervalId = setInterval(() => {
       setTime(new Date());
     }, 1000);
@@ -17,7 +11,16 @@ function Clock() {
     return () => clearInterval(intervalId);
   }, []);
 
-  return <div className="text-center text-xl font-bold">{time.toLocaleTimeString()}</div>;
+  // 時:分 のフォーマットに変更
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  return (
+    <div className="text-center text-xl font-bold">
+      {formatTime(time)}
+    </div>
+  );
 }
 
 export default Clock;

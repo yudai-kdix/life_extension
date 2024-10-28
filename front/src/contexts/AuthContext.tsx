@@ -56,7 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return storedUserInfo ? JSON.parse(storedUserInfo) : null;
   });
 
-  const { resetCharacterState } = useCharacter();
+  const { resetCharacterState } = useCharacter(); //これちゃんと実装しないとだめ
   const navigate = useNavigate();
 
   const fetchUserInfo = useCallback(async () => {

@@ -10,6 +10,9 @@ export interface User {
   last_login: string;
 }
 
+// 型定義を更新
+export type CharacterStatus = 0 | 1 | 2 | 3;  // 0を追加
+
 export interface Character {
   id: number;
   user_id: number;
@@ -17,7 +20,7 @@ export interface Character {
   age: number;
   lifespan: number;
   health_points: number;
-  status: number;
+  status: CharacterStatus;
   last_updated: string;
 }
 
@@ -40,7 +43,7 @@ interface CharacterContextType {
   createCharacter: (userId: number, characterName: string) => Promise<void>;
   performAction: (action: GameAction, selectedDetail: { value: string }) => Promise<void>;
   fetchActions: (characterId: number) => Promise<void>;
-  resetCharacterState: () => void;
+  resetCharacterState: () => void; //ちゃんと実装しろ 原因は「AuthProviderがCharacterProviderの外にあること」で、依存関係云々があるからめんどくさい
 }
 
 // 初期値の定義
@@ -106,7 +109,7 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
       if (characters.length > 0) {
         setCurrentCharacter(characters[0]);
       } else {
-        throw new Error('キャラクターを作成していません');
+        throw new Error('キャラクターを作成してください');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : '不明なエラーが発生しました');
@@ -225,7 +228,7 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
         createCharacter,
         performAction,
         fetchActions,
-        resetCharacterState,
+        resetCharacterState, // やれ
       }}
     >
       {children}
