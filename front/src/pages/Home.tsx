@@ -7,7 +7,6 @@ import CharacterImage from '../components/CharacterImage';
 import { useAuth } from '../contexts/AuthContext';
 import DeadHome from '../components/DeadHome';
 
-
 export function Home() {
   const { currentCharacter, fetchCharacter, performAction } = useCharacter();
   const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -66,8 +65,8 @@ export function Home() {
 
   console.log('home, currentCharacter: ', currentCharacter);
 
-  if(currentCharacter.status == 0) {
-    return <DeadHome character={currentCharacter}/>
+  if (currentCharacter.status == 0) {
+    return <DeadHome character={currentCharacter} />;
   }
 
   return (
@@ -143,8 +142,14 @@ export function Home() {
         {/* キャラクター表示エリア */}
         <div className="flex-1 flex items-center justify-center">
           <div className="w-32 h-32 rounded-full flex items-center justify-center" id="myImage">
-           {/* バックエンド側でキャラクターのstatusの初期値がnullになっているのが修正されれば削除 */}
-           {currentCharacter.status != null ? (<CharacterImage character={currentCharacter} />) : (<p className='px-2 py-6 bg-white text-red-500 font-bold rounded-md'>バックエンドでキャラクター作ったときにstatusがnullになってるかもだから修正してほしい</p>)}
+            {/* バックエンド側でキャラクターのstatusの初期値がnullになっているのが修正されれば削除 */}
+            {currentCharacter.status != null ? (
+              <CharacterImage character={currentCharacter} />
+            ) : (
+              <p className="px-2 py-6 bg-white text-red-500 font-bold rounded-md">
+                バックエンドでキャラクター作ったときにstatusがnullになってるかもだから修正してほしい
+              </p>
+            )}
           </div>
         </div>
       </div>

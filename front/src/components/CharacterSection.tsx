@@ -1,8 +1,10 @@
-import { useCharacter } from '../contexts/CharacterContext';
+import { useCharacter } from '@/contexts/CharacterContext';
+import { CharacterHistoryModal } from './CharacterHistoryModal';
+import { Skull } from 'lucide-react';
 
-// Character Section
 export function CharacterSection() {
-  const { currentCharacter } = useCharacter();
+  const { currentCharacter, characters } = useCharacter();
+  const isDead = currentCharacter?.status === 0 || (currentCharacter?.health_points ?? 0) <= 0;
 
   if (!currentCharacter) {
     return (
@@ -17,6 +19,7 @@ export function CharacterSection() {
   const getStatusBarStyle = (current: number, max: number) => {
     const percentage = (current / max) * 100;
     const getColor = () => {
+      if (isDead) return 'bg-gray-500';
       if (percentage > 66) return 'bg-green-500';
       if (percentage > 33) return 'bg-yellow-500';
       return 'bg-red-500';
@@ -25,22 +28,39 @@ export function CharacterSection() {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
+    <div className={`bg-white rounded-lg shadow p-6 ${isDead ? 'opacity-90' : ''}`}>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">キャラクター情報</h2>
-        <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
-          最終更新:{' '}
-          {currentCharacter.last_updated
-            ? new Date(currentCharacter.last_updated).toLocaleString()
-            : '?'}
-        </span>
+        <div className="flex items-center gap-4">
+          <CharacterHistoryModal characters={characters} />
+          <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
+            最終更新:{' '}
+            {currentCharacter.last_updated
+              ? new Date(currentCharacter.last_updated).toLocaleString()
+              : '?'}
+          </span>
+        </div>
       </div>
+
+      {isDead && (
+        <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3">
+          <Skull className="text-red-500 w-6 h-6" />
+          <div>
+            <h3 className="font-medium text-red-800">キャラクターは死亡しました</h3>
+            <p className="text-sm text-red-600">
+              享年: {currentCharacter.age}歳 / 寿命: {Math.floor(currentCharacter.lifespan)}年
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="grid gap-6">
         <div>
           <div className="flex justify-between mb-2">
-            <span className="font-medium">{currentCharacter.character_name}</span>
-            <span>Lv. {Math.floor(currentCharacter.age / 5) + 1}</span>
+            <span>
+              <span>なまえ：</span>
+              <span className="font-semibold">{currentCharacter.character_name}</span>
+            </span>
           </div>
 
           {/* HP */}
@@ -80,7 +100,7 @@ export function CharacterSection() {
               体力: {currentCharacter.health_points}
             </div>
             <div className="px-4 py-2 bg-gray-50 rounded">
-              状態: {currentCharacter.status === 1 ? '健康' : '不調'}
+              状態: {isDead ? '死亡' : currentCharacter.status === 1 ? '健康' : '不調'}
             </div>
           </div>
         </div>

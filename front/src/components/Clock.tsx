@@ -16,11 +16,7 @@ function Clock() {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  return (
-    <div className="text-center text-xl font-bold">
-      {formatTime(time)}
-    </div>
-  );
+  return <div className="text-center text-xl font-bold">{formatTime(time)}</div>;
 }
 
 export default Clock;

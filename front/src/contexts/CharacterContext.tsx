@@ -11,7 +11,7 @@ export interface User {
 }
 
 // 型定義を更新
-export type CharacterStatus = 0 | 1 | 2 | 3;  // 0を追加
+export type CharacterStatus = 0 | 1 | 2 | 3; // 0を追加
 
 export interface Character {
   id: number;

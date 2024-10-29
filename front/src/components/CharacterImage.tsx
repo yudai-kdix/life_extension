@@ -1,11 +1,11 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react';
-import { Character, CharacterStatus } from "../contexts/CharacterContext"
+import { Character, CharacterStatus } from '../contexts/CharacterContext';
 
 interface CharacterImage {
   sad: string;
   normal: string;
   happy: string;
-  dead?: string;  // 死亡状態の画像を追加
+  dead?: string; // 死亡状態の画像を追加
 }
 
 // 定数定義を更新
@@ -45,10 +45,10 @@ interface CharacterImageProps {
   containerHeight?: number;
 }
 
-function CharacterImage({ 
-  character, 
-  containerWidth = 125, 
-  containerHeight = 100 
+function CharacterImage({
+  character,
+  containerWidth = 125,
+  containerHeight = 100,
 }: CharacterImageProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [mousePosition, setMousePosition] = useState<Position>({ x: 0, y: 0 });
@@ -58,12 +58,12 @@ function CharacterImage({
   // キャラクターの画像を決定するロジックを更新
   const currentImage = useMemo(() => {
     const images = CHARACTER_IMAGES[character.status];
-    
+
     // 死亡状態の場合
     if (character.status === 0) {
       return images.dead;
     }
-    
+
     // 生存状態の場合
     if (character.health_points < 5) return images.sad;
     if (character.health_points < 10) return images.normal;
@@ -110,8 +110,14 @@ function CharacterImage({
     const windowCenterY = window.innerHeight / 2;
 
     return {
-      x: mousePosition.x - containerPosition.x - (mousePosition.x >= windowCenterX ? containerWidth : 0),
-      y: mousePosition.y - containerPosition.y - (mousePosition.y >= windowCenterY ? containerHeight : 0),
+      x:
+        mousePosition.x -
+        containerPosition.x -
+        (mousePosition.x >= windowCenterX ? containerWidth : 0),
+      y:
+        mousePosition.y -
+        containerPosition.y -
+        (mousePosition.y >= windowCenterY ? containerHeight : 0),
     };
   }, [character.status, mousePosition, containerPosition, containerWidth, containerHeight]);
 
