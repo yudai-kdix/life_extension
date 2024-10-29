@@ -107,8 +107,13 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
       const response = await axios.get(`${API_URL}/users/${userId}/characters`);
       const characters = await response.data;
 
-      if (characters.length > 0 && characters[0].health_points > 0) {
-        setCurrentCharacter(characters[0]);
+      if (characters.length > 0) {
+        if (characters[0].status != 0) {
+          console.log('statusが1,2,3のどれか');
+          setCurrentCharacter(characters[0]);
+        } else {
+          console.log('statusが0です。死亡しています。');
+        }
       } else {
         throw new Error('キャラクターを作成してください');
       }

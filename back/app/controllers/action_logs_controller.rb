@@ -23,7 +23,7 @@ class ActionLogsController < ApplicationController
       character_lifespan_service = CharacterLifespanService.new(character)
       character_lifespan_service.update_lifespan(@action_log.action_type, @action_log.detail, character.status)
       
-      if character.health_points == 0 then
+      if character.health_points <= 0 then
         character.status = 0
       else
         character.update_characters_status_by_lifespan_ikiteru

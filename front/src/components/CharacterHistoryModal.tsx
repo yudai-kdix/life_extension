@@ -33,9 +33,6 @@ export const CharacterHistoryModal = ({ characters }: { characters: Character[] 
                     <span className="text-red-500 text-sm">(死亡)</span>
                   )}
                 </h3>
-                <span className="text-sm text-gray-500">
-                  Lv. {Math.floor(character.age / 5) + 1}
-                </span>
               </div>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>寿命: {Math.floor(character.lifespan)}年</div>
