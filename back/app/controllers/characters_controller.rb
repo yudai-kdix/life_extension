@@ -54,10 +54,6 @@ class CharactersController < ApplicationController
 
   # Strong Parameters
   def character_params
-<<<<<<< HEAD
     params.permit(:character_name)
-=======
-    params.require(:character).permit(:character_name, :age, :lifespan, :health_points)
->>>>>>> 74e91983a4af3ca264c2d8c7dd2f59968927aeae
   end
 end
