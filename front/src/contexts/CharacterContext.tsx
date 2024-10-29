@@ -44,6 +44,7 @@ interface CharacterContextType {
   performAction: (action: GameAction, selectedDetail: { value: string }) => Promise<void>;
   fetchActions: (characterId: number) => Promise<void>;
   resetCharacterState: () => void; //ちゃんと実装しろ 原因は「AuthProviderがCharacterProviderの外にあること」で、依存関係云々があるからめんどくさい
+  resetCurrentCharacter: () => void;
 }
 
 // 初期値の定義
@@ -58,6 +59,7 @@ const initialContext: CharacterContextType = {
   performAction: async () => {},
   fetchActions: async () => {},
   resetCharacterState: async () => {},
+  resetCurrentCharacter: async () => {},
 };
 
 // CharacterContextの作成
@@ -88,9 +90,8 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
 
       console.log('characters: ', characters);
       setCharacters(characters);
-      console.log('currentCharacter: ', currentCharacter);
       if (characters.length > 0) {
-        setCurrentCharacter(characters[0]);
+        console.log('fetchCharacters: ', characters);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : '不明なエラーが発生しました');
@@ -106,7 +107,7 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
       const response = await axios.get(`${API_URL}/users/${userId}/characters`);
       const characters = await response.data;
 
-      if (characters.length > 0) {
+      if (characters.length > 0 && characters[0].health_points > 0) {
         setCurrentCharacter(characters[0]);
       } else {
         throw new Error('キャラクターを作成してください');
@@ -146,8 +147,13 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const resetCharacterState = useCallback(() => {
-    console.log('resetキャラクター');
+    console.log('キャラクター状態全リセット');
     setCharacters([]);
+    setCurrentCharacter(null);
+  }, []);
+
+  const resetCurrentCharacter = useCallback(() => {
+    console.log('currentCharacterリセット');
     setCurrentCharacter(null);
   }, []);
 
@@ -229,6 +235,7 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
         performAction,
         fetchActions,
         resetCharacterState, // やれ
+        resetCurrentCharacter,
       }}
     >
       {children}

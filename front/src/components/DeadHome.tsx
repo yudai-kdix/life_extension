@@ -3,9 +3,10 @@ import CharacterImage from './CharacterImage';
 
 type DeadHomeProps = {
   character: Character;
+  handleCharacterCreate: () => void;
 };
 
-export default function DeadHome({ character }: DeadHomeProps) {
+export default function DeadHome({ character, handleCharacterCreate }: DeadHomeProps) {
   return (
     <div className="absolute inset-0 bg-no-repeat bg-cover bg-center bg-[url('/src/assets/images/b.png')]">
       <div className="absolute inset-0" />
@@ -68,6 +69,15 @@ export default function DeadHome({ character }: DeadHomeProps) {
             </div>
           </div>
         )} */}
+
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2  bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-4">
+          <button
+            onClick={handleCharacterCreate}
+            className="w-96 h-16 p-4 text-center bg-blue-500 text-white m-4 rounded-full font-bold text-xl"
+          >
+            キャラクターを新しく作る
+          </button>
+        </div>
 
         {/* キャラクター表示エリア */}
         <div className="flex-1 flex items-center justify-center">

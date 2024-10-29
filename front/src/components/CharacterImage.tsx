@@ -53,7 +53,6 @@ function CharacterImage({
   const containerRef = useRef<HTMLDivElement>(null);
   const [mousePosition, setMousePosition] = useState<Position>({ x: 0, y: 0 });
   const [containerPosition, setContainerPosition] = useState<Position>({ x: 0, y: 0 });
-  console.log(CHARACTER_IMAGES[1].normal);
 
   // キャラクターの画像を決定するロジックを更新
   const currentImage = useMemo(() => {

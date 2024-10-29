@@ -1,4 +1,4 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useCharacter } from '../contexts/CharacterContext';
 import { useEffect, useState } from 'react';
 import { ActionButton } from '../components/ActionButton';
@@ -8,10 +8,11 @@ import { useAuth } from '../contexts/AuthContext';
 import DeadHome from '../components/DeadHome';
 
 export function Home() {
-  const { currentCharacter, fetchCharacter, performAction } = useCharacter();
+  const { currentCharacter, fetchCharacter, performAction, resetCurrentCharacter } = useCharacter();
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [selectedAction, setSelectedAction] = useState<GameAction | null>(null);
   const { userInfo } = useAuth();
+  const navigate = useNavigate();
   const userId = userInfo?.id;
 
   useEffect(() => {
@@ -63,10 +64,15 @@ export function Home() {
     }
   };
 
-  console.log('home, currentCharacter: ', currentCharacter);
+  // キャラ作成時の処理
+  const handleCharacterCreate = async () => {
+    console.log('create');
+    await resetCurrentCharacter();
+    navigate('/create');
+  };
 
   if (currentCharacter.status == 0) {
-    return <DeadHome character={currentCharacter} />;
+    return <DeadHome character={currentCharacter} handleCharacterCreate={handleCharacterCreate} />;
   }
 
   return (
