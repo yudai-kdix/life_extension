@@ -58,11 +58,6 @@ function CharacterImage({
   // キャラクターの画像を決定するロジックを更新
   const currentImage = useMemo(() => {
     const images = CHARACTER_IMAGES[character.status];
-
-    console.log("currentImages:")
-
-    console.log(CHARACTER_IMAGES[1].normal);
-    
     
     // 死亡状態の場合
     if (character.status === 0) {
@@ -124,6 +119,7 @@ function CharacterImage({
     <div ref={containerRef} className="relative">
       <img
         src={currentImage}
+        width={character.status == 0 ? 350 : 160}
         alt={`Character (Status: ${character.status === 0 ? 'Dead' : 'Alive'}, HP: ${character.health_points})`}
         className={`transition-transform duration-500 ease-in-out
           ${character.status === 0 ? 'grayscale opacity-75' : ''}`}

@@ -71,7 +71,7 @@ export default function DeadHome({ character }: DeadHomeProps) {
 
         {/* キャラクター表示エリア */}
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-32 h-32 rounded-full flex items-center justify-center" id="myImage">
+          <div className="w-96 h-96 rounded-full flex items-center justify-center" id="myImage">
             {/* バックエンド側でキャラクターのstatusの初期値がnullになっているのが修正されれば削除 */}
             {character.status != null && <CharacterImage character={character} />}
           </div>
