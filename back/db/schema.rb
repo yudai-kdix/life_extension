@@ -10,7 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+<<<<<<< HEAD
 ActiveRecord::Schema[7.0].define(version: 2024_10_26_130843) do
+=======
+ActiveRecord::Schema[7.0].define(version: 2024_10_24_065724) do
+>>>>>>> 74e91983a4af3ca264c2d8c7dd2f59968927aeae
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -18,8 +22,15 @@ ActiveRecord::Schema[7.0].define(version: 2024_10_26_130843) do
     t.bigint "user_id", null: false
     t.bigint "character_id", null: false
     t.string "action_type"
+<<<<<<< HEAD
     t.string "detail"
     t.datetime "created_at", null: false
+=======
+    t.string "description"
+    t.integer "effect_on_lifespan"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+>>>>>>> 74e91983a4af3ca264c2d8c7dd2f59968927aeae
     t.index ["character_id"], name: "index_action_logs_on_character_id"
     t.index ["user_id"], name: "index_action_logs_on_user_id"
   end
@@ -38,6 +49,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_10_26_130843) do
     t.bigint "user_id", null: false
     t.string "character_name"
     t.integer "age"
+<<<<<<< HEAD
     t.float "lifespan"
     t.float "health_points"
     t.datetime "created_at", null: false
@@ -45,6 +57,12 @@ ActiveRecord::Schema[7.0].define(version: 2024_10_26_130843) do
     t.float "hp_movement"
     t.float "lifespan_movement"
     t.integer "status"
+=======
+    t.integer "lifespan"
+    t.integer "health_points"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+>>>>>>> 74e91983a4af3ca264c2d8c7dd2f59968927aeae
     t.index ["user_id"], name: "index_characters_on_user_id"
   end
 
@@ -54,6 +72,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_10_26_130843) do
     t.string "avatar_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+<<<<<<< HEAD
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
     t.datetime "reset_password_sent_at"
@@ -65,6 +84,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_10_26_130843) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
+=======
+>>>>>>> 74e91983a4af3ca264c2d8c7dd2f59968927aeae
   end
 
   add_foreign_key "action_logs", "characters"

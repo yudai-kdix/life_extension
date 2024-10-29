@@ -23,7 +23,8 @@ class CharactersController < ApplicationController
     @character.age = 0
     @character.lifespan = 7
     @character.health_points = 8
-
+    @character.status = 1
+    
     if @character.save
       render json: @character, status: :created
     else
@@ -53,6 +54,10 @@ class CharactersController < ApplicationController
 
   # Strong Parameters
   def character_params
+<<<<<<< HEAD
     params.permit(:character_name)
+=======
+    params.require(:character).permit(:character_name, :age, :lifespan, :health_points)
+>>>>>>> 74e91983a4af3ca264c2d8c7dd2f59968927aeae
   end
 end
