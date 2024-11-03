@@ -105,10 +105,12 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const response = await axios.get(`${API_URL}/users/${userId}/characters`);
-      const characters = await response.data;
+      const characters  = await response.data as Character[];
+
+      console.log("characters: ", characters)
 
       if (characters.length > 0) {
-        if (characters[0].status != 0) {
+        if (characters[1].status != 0) {
           console.log('statusが1,2,3のどれか');
           setCurrentCharacter(characters[0]);
         } else {
@@ -125,6 +127,7 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const createCharacter = useCallback(async (userId: number, characterName: string) => {
+    console.log("キャラクター作成");
     setIsLoading(true);
     setError(null);
     try {

@@ -71,6 +71,7 @@ export function Home() {
     navigate('/create');
   };
 
+  // 死亡時のホーム
   if (currentCharacter.status == 0) {
     return <DeadHome character={currentCharacter} handleCharacterCreate={handleCharacterCreate} />;
   }
@@ -148,14 +149,7 @@ export function Home() {
         {/* キャラクター表示エリア */}
         <div className="flex-1 flex items-center justify-center">
           <div className="w-32 h-32 rounded-full flex items-center justify-center" id="myImage">
-            {/* バックエンド側でキャラクターのstatusの初期値がnullになっているのが修正されれば削除 */}
-            {currentCharacter.status != null ? (
-              <CharacterImage character={currentCharacter} />
-            ) : (
-              <p className="px-2 py-6 bg-white text-red-500 font-bold rounded-md">
-                バックエンドでキャラクター作ったときにstatusがnullになってるかもだから修正してほしい
-              </p>
-            )}
+            <CharacterImage character={currentCharacter} />
           </div>
         </div>
       </div>
