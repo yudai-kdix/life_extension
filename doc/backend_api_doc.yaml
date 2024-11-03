@@ -1,0 +1,442 @@
+openapi: 3.0.0
+info:
+  description: "ヘルピィのバックエンド"
+  version: "1.0.0"
+  title: "Helpy API"
+servers:
+  - url: "http://localhost:3000"
+    description: "Development server"
+  - url: "https://api.helpy.com"
+    description: "Production server"
+
+
+paths:
+  /users:
+    post:
+      summary: ユーザー作成
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                password_confirmation:
+                  type: string
+      responses:
+        "201":
+          description: User created]
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      username:
+                        type: string
+                      email:
+                        type: string
+                      avatar_url:
+                        type: string
+                      created_at:
+                        type: string
+                      updated_at:
+                        type: string
+                      provider:
+                        type: string
+                      uid:
+                        type: string
+                      last_login:
+                        type: string
+                  token:
+                    type: object
+                    properties:
+                      access-token:
+                        type: string
+                      token-type:
+                        type: string
+                      client:
+                        type: string
+                      expiry:
+                        type: string
+                      uid:
+                        type: string
+                      Authorization:
+                        type: string
+    get:
+      summary: まだ多分未実装
+      operationId: listUsers
+      responses:
+        "200":
+          description: User list
+    
+  /users/login:
+    post:
+      summary: ログイン
+      operationId: usersLogin
+      responses:
+        "200":
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      username:
+                        type: string
+                      email:
+                        type: string
+                      avatar_url:
+                        type: string
+                      created_at:
+                        type: string
+                      updated_at:
+                        type: string
+                      provider:
+                        type: string
+                      uid:
+                        type: string
+                      last_login:
+                        type: string
+                  token:
+                    type: object
+                    properties:
+                      access-token:
+                        type: string
+                      token-type:
+                        type: string
+                      client:
+                        type: string
+                      expiry:
+                        type: string
+                      uid:
+                        type: string
+                      Authorization:
+                        type: string
+
+  /users/{user_id}/characters:
+    get:
+      summary: ユーザーに紐づくキャラクター一覧
+      operationId: listCharactersByUser
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Character list for a specific user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    character_name:
+                      type: string
+                    age:
+                      type: integer
+                    lifespan:
+                      type: integer
+                    health_points:
+                      type: integer
+                    status:
+                      type: integer
+                    user_id:
+                      type: integer
+                    created_at:
+                      type: string
+                    updated_at:
+                      type: string
+
+  # /users/{id}:
+  #   get:
+  #     summary: Show User
+  #     operationId: showUser
+  #     parameters:
+  #       - name: id
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #     responses:
+  #       "200":
+  #         description: User details
+  #   patch:
+  #     summary: Update User
+  #     operationId: updateUserPatch
+  #     parameters:
+  #       - name: id
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #     responses:
+  #       "200":
+  #         description: User updated
+  #   put:
+  #     summary: Update User
+  #     operationId: updateUserPut
+  #     parameters:
+  #       - name: id
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #     responses:
+  #       "200":
+  #         description: User updated
+  #   delete:
+  #     summary: Delete User
+  #     operationId: deleteUser
+  #     parameters:
+  #       - name: id
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #     responses:
+  #       "204":
+  #         description: User deleted
+
+  /characters:
+    post:
+      summary: キャラクター作成
+      operationId: createCharacter
+      description: ログインがちゃんと実装されるとuser_idはいらなくなります
+      responses:
+        "201":
+          description: Character created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  character_name:
+                    type: string
+                  user_id:
+                    type: integer
+    get:
+      summary: ここでキャラクターを取得できるようにします！！
+      description: loginが実装されるとここ動くようにします
+      operationId: listCharacters
+      responses:
+        "200":
+          description: Character list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  characters:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        character_name:
+                          type: string
+                        age:
+                          type: integer
+                        lifespan:
+                          type: integer
+                        health_points:
+                          type: integer
+                        status:
+                          type: integer
+                        user_id:
+                          type: string
+                        created_at:
+                          type: string
+                        updated_at:
+                          type: string
+    # options:
+    #   summary: Character Options
+    #   operationId: characterOptions
+    #   responses:
+    #     "200":
+    #       description: Options for creating character
+
+  # /characters/{id}:
+  #   get:
+  #     summary: Show Character
+  #     operationId: showCharacter
+  #     parameters:
+  #       - name: id
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #     responses:
+  #       "200":
+  #         description: Character details
+  #   patch:
+  #     summary: Update Character
+  #     operationId: updateCharacterPatch
+  #     parameters:
+  #       - name: id
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #     responses:
+  #       "200":
+  #         description: Character updated
+  #   put:
+  #     summary: Update Character
+  #     operationId: updateCharacterPut
+  #     parameters:
+  #       - name: id
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #     responses:
+  #       "200":
+  #         description: Character updated
+  #   delete:
+  #     summary: Delete Character
+  #     operationId: deleteCharacter
+  #     parameters:
+  #       - name: id
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #     responses:
+  #       "204":
+  #         description: Character deleted
+
+  /action_logs:
+    get:
+      summary: ここでユーザーの行動ログを取得できるようにします！！
+      operationId: listActionLogs
+      description: loginが実装されるとここ動くようにします
+      responses:
+        "200":
+          description: Action log list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    user_id:
+                      type: string
+                    character_id:
+                      type: string
+                    action:
+                      type: string
+                    created_at:
+                      type: string
+                    updated_at:
+                      type: string
+    post:
+      summary: 行動ログ作成
+      operationId: createActionLog
+      responses:
+        "201":
+          description: Action log created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  character_name:
+                    type: string
+                  health_points:
+                    type: integer
+                  lifespan:
+                    type: integer
+                  age:
+                    type: integer
+                  status:
+                    type: integer
+                  user_id:
+                    type: integer
+                  created_at:
+                    type: string
+                  updated_at:
+                    type: string
+
+  # /action_logs/{id}:
+  #   get:
+  #     summary: Show Action Log
+  #     operationId: showActionLog
+  #     parameters:
+  #       - name: id
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #     responses:
+  #       "200":
+  #         description: Action log details
+
+  /users/{id}/action:
+    get:
+      summary: 多分まだ未実装！！！ユーザーの行動ログを取得
+      operationId: listUserActions
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Actions for specific user
+
+  /users/{user_id}/meal:
+    get:
+      summary: その日食事取ったかどうか判定
+      operationId: listMealLogsForUser
+      description: 食べてるとTrue, 食べてないとFalse
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Meal logs for specific user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  morning:
+                    type: boolean
+                  afternoon:
+                    type: boolean
+                  night:
+                    type: boolean
+                  other:
+                    type: boolean
