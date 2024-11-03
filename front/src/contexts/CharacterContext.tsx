@@ -107,19 +107,18 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
       const response = await axios.get(`${API_URL}/users/${userId}/characters`);
       const characters  = await response.data as Character[];
 
-      console.log("characters: ", characters)
+      const alive_characters = characters.filter(character => (character.status !== 0 && character))
 
-      if (characters.length > 0) {
-        if (characters[1].status != 0) {
-          console.log('statusが1,2,3のどれか');
-          setCurrentCharacter(characters[0]);
-        } else {
-          console.log('statusが0です。死亡しています。');
-        }
+      console.log("characters: ", characters)
+      console.log("alive_character: ", alive_characters);
+
+      if (alive_characters.length > 0) {
+        setCurrentCharacter(alive_characters[0]);
       } else {
         throw new Error('キャラクターを作成してください');
       }
     } catch (err) {
+      console.log("fetchCharacterでエラーが起きてる", err.message);
       setError(err instanceof Error ? err.message : '不明なエラーが発生しました');
     } finally {
       setIsLoading(false);
@@ -133,6 +132,7 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
     try {
       const data = {
         character_name: characterName,
+        user_id: userId
       };
       console.log('token: ', token?.Authorization);
       const response = await axios.post(`${API_URL}/characters`, data, {
@@ -147,6 +147,7 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
       setCharacters([created]);
       setCurrentCharacter(created);
     } catch (err) {
+      console.log("キャラクター作成時にエラーが発生しました：", err.message);
       setError(err instanceof Error ? err.message : '不明なエラーが発生しました');
       throw err;
     } finally {
