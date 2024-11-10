@@ -71,9 +71,9 @@ export function Create() {
           <div className="text-sm text-gray-500">
             <h3 className="font-medium mb-2">初期ステータス:</h3>
             <ul className="space-y-1">
-              <li>• HP: 100</li>
-              <li>• 寿命: 100年</li>
-              <li>• 年齢: 20歳</li>
+              <li>• HP: 8</li>
+              <li>• 寿命: 7日</li>
+              <li>• 年齢: 0歳</li>
             </ul>
           </div>
 

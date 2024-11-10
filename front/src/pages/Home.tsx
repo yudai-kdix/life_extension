@@ -19,6 +19,10 @@ export function Home() {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [selectedAction, setSelectedAction] = useState<GameAction | null>(null);
   const [selectedMealType, setSelectedMealType] = useState<MealType | null>(null);
+  const [currentAction, setCurrentAction] = useState<{
+    type: ActionType;
+    value: string;
+  } | null>(null);
   const { userInfo } = useAuth();
   const navigate = useNavigate();
   const userId = userInfo?.id;
@@ -70,6 +74,11 @@ export function Home() {
     if (selectedAction) {
       try {
         const actionType = selectedMealType ? selectedMealType.type : selectedAction.type;
+        // アクションの情報を設定
+        setCurrentAction({
+          type: actionType as ActionType,
+          value: detail.value,
+        });
         console.log(
           'performAction: ',
           { ...selectedAction, type: actionType as ActionType },
@@ -81,6 +90,10 @@ export function Home() {
       } finally {
         setSelectedAction(null); // モーダルを閉じる
         setSelectedMealType(null);
+         // 3秒後にアクション情報をクリア
+         setTimeout(() => {
+          setCurrentAction(null);
+        }, 3000);
       }
     }
   };
@@ -109,7 +122,7 @@ export function Home() {
               <div className="font-semibold mb-2 border-b-2">{currentCharacter.character_name}</div>
               <div className="flex justify-between items-center mb-1">
                 <span className="text-sm font-medium">HP</span>
-                <span className="text-sm">{currentCharacter.health_points}/15</span>
+                <span className="text-sm">{Number(currentCharacter.health_points).toFixed(1)}/15</span>
               </div>
               <div className="w-32 h-2 bg-gray-200 rounded-full">
                 <div
@@ -240,7 +253,7 @@ export function Home() {
         {/* キャラクター表示エリア */}
         <div className="flex-1 flex items-center justify-center">
           <div className="w-32 h-32 rounded-full flex items-center justify-center" id="myImage">
-            <CharacterImage character={currentCharacter} />
+            <CharacterImage character={currentCharacter}  currentAction={currentAction}/>
           </div>
         </div>
       </div>

@@ -136,7 +136,7 @@ export function Header() {
               <div className="flex items-center space-x-2">
                 <Heart className={`w-5 h-5 ${getHealthColor(currentCharacter.health_points)}`} />
                 <span className={`font-medium ${getHealthColor(currentCharacter.health_points)}`}>
-                  {currentCharacter.health_points}/15
+                {Number(currentCharacter.health_points).toFixed(1)}/15
                 </span>
               </div>
             ) : (
