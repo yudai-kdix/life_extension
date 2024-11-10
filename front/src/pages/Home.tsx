@@ -127,11 +127,43 @@ export function Home() {
               <span className="text-sm">{currentCharacter.age}歳</span>
             </div>
 
-            <div>
-              <p>朝食: {mealStatus.morning ? '済' : '未'}</p>
-              <p>昼食: {mealStatus.afternoon ? '済' : '未'}</p>
-              <p>夕食: {mealStatus.night ? '済' : '未'}</p>
-              <p>その他: {mealStatus.other ? '済' : '未'}</p>
+            <div className="flex justify-between">
+              {mealStatus.morning ? (
+                <img src={'/src/assets/images/morning.png'} width="30px" />
+              ) : (
+                <img
+                  src={'/src/assets/images/morning.png'}
+                  width="30px"
+                  className="filter grayscale"
+                />
+              )}
+              {mealStatus.afternoon ? (
+                <img src={'/src/assets/images/lunch.png'} width="30px" />
+              ) : (
+                <img
+                  src={'/src/assets/images/lunch.png'}
+                  width="30px"
+                  className="filter grayscale"
+                />
+              )}
+              {mealStatus.night ? (
+                <img src={'/src/assets/images/dinner.png'} width="30px" />
+              ) : (
+                <img
+                  src={'/src/assets/images/dinner.png'}
+                  width="30px"
+                  className="filter grayscale"
+                />
+              )}
+              {mealStatus.other ? (
+                <img src={'/src/assets/images/snack.png'} width="30px" />
+              ) : (
+                <img
+                  src={'/src/assets/images/snack.png'}
+                  width="30px"
+                  className="filter grayscale"
+                />
+              )}
             </div>
           </div>
         </div>
