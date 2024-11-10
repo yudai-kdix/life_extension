@@ -5,7 +5,7 @@ class ActionLogsController < ApplicationController
     @action_log = ActionLog.new(action_log_params)
     # @action_log.user_id = params[:user_id] # user_idがリクエストで渡される場合
     # @action_log.character_id = params[:character_id] # character_idがリクエストで渡される場合
-    @action_log.user_id = params[:user_id]
+    @action_log.user_id = current_user.id
     # 行動による寿命やHPの変化を計算
     if @action_log.save
       # キャラクターの寿命やステータスを更新（例: 行動に応じて寿命を変更）
@@ -30,7 +30,7 @@ class ActionLogsController < ApplicationController
   end
 
   def user_actions
-    @user = User.find(params[:id])
+    @user = current_user.id
     @action_logs = @user.action_logs
     render json: @action_logs
   end
@@ -44,7 +44,7 @@ class ActionLogsController < ApplicationController
 
   # 当日の食事ログを取得
   def meal_logs
-    @user = User.find(params[:user_id])
+    @user = current_user
     @today_action_logs = @user.action_logs.where(created_at: Time.zone.now.all_day)
     meal_logs = {
       morning: @today_action_logs.exists?(action_type: '朝食'),
@@ -69,7 +69,7 @@ class ActionLogsController < ApplicationController
 
   # ユーザーに紐づくある特定の日の行動ログを取得
   def user_particular_day_actions
-    @user = User.find(params[:user_id])
+    @user = current_user
     @particular_day_action_logs = @user.action_logs.where(created_at: params[:date].to_date.all_day)
     render json: @particular_day_action_logs
   end

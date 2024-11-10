@@ -478,3 +478,27 @@ paths:
                       type: string
                     updated_at:
                       type: string
+
+  /characters/death_detail:
+    get:
+      summary: 死亡理由の詳細を取得
+      operationId: listDeathDetails
+      description: 死亡理由とポイン著の変動値を取得
+      parameters:
+        - name: character_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Death details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cause_of_death:
+                    type: string
+                  death_point:
+                    type: array
