@@ -16,6 +16,6 @@ class Auth::RegistrationsController < DeviseTokenAuth::RegistrationsController
     token = @resource.create_new_auth_token
     # response.set_header('access-token', token['access-token'])
     # response.set_header('client', token['client'])
-    render json: { user: @resource, token: token }, status: :created
+    response.body ={ user: @resource, token: token }.to_json
   end
 end
