@@ -14,8 +14,8 @@ class Auth::RegistrationsController < DeviseTokenAuth::RegistrationsController
     return unless @resource.persisted?
 
     token = @resource.create_new_auth_token
-    response.set_header('access-token', token['access-token'])
-    response.set_header('client', token['client'])
-    
+    # response.set_header('access-token', token['access-token'])
+    # response.set_header('client', token['client'])
+    response.body ={ user: @resource, token: token }.to_json
   end
 end

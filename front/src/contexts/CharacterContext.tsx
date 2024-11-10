@@ -11,7 +11,7 @@ export interface User {
 }
 
 // 型定義を更新
-export type CharacterStatus = 0 | 1 | 2 | 3;  // 0を追加
+export type CharacterStatus = 0 | 1 | 2 | 3; // 0を追加
 
 export interface Character {
   id: number;
@@ -33,17 +33,29 @@ export interface Action {
   action_time: string;
 }
 
+// 食事状態の型定義を追加
+interface MealStatus {
+  morning: boolean;
+  afternoon: boolean;
+  night: boolean;
+  other: boolean;
+}
+
+
 interface CharacterContextType {
   characters: Character[];
   currentCharacter: Character | null;
   isLoading: boolean;
   error: string | null;
+  mealStatus: MealStatus;
   fetchUserCharacters: (userId: number) => Promise<void>;
   fetchCharacter: (userId: number) => Promise<void>;
   createCharacter: (userId: number, characterName: string) => Promise<void>;
   performAction: (action: GameAction, selectedDetail: { value: string }) => Promise<void>;
   fetchActions: (characterId: number) => Promise<void>;
   resetCharacterState: () => void; //ちゃんと実装しろ 原因は「AuthProviderがCharacterProviderの外にあること」で、依存関係云々があるからめんどくさい
+  resetCurrentCharacter: () => void;
+  fetchMealStatus: (userId: number) => Promise<void>;
 }
 
 // 初期値の定義
@@ -52,12 +64,20 @@ const initialContext: CharacterContextType = {
   currentCharacter: null,
   isLoading: false,
   error: null,
+  mealStatus: {
+    morning: false,
+    afternoon: false,
+    night: false,
+    other: false,
+  },
   fetchUserCharacters: async () => {},
   fetchCharacter: async () => {},
   createCharacter: async () => {},
   performAction: async () => {},
   fetchActions: async () => {},
   resetCharacterState: async () => {},
+  resetCurrentCharacter: async () => {},
+  fetchMealStatus: async () => {},
 };
 
 // CharacterContextの作成
@@ -71,6 +91,7 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
   const [actions, setActions] = useState<Action[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mealStatus, setMealStatus] = useState<MealStatus>(initialContext.mealStatus);
   const { token } = useAuth();
 
   const fetchUserCharacters = useCallback(async (userId: number) => {
@@ -88,9 +109,8 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
 
       console.log('characters: ', characters);
       setCharacters(characters);
-      console.log('currentCharacter: ', currentCharacter);
       if (characters.length > 0) {
-        setCurrentCharacter(characters[0]);
+        console.log('fetchCharacters: ', characters);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : '不明なエラーが発生しました');
@@ -104,14 +124,20 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const response = await axios.get(`${API_URL}/users/${userId}/characters`);
-      const characters = await response.data;
+      const characters  = await response.data as Character[];
 
-      if (characters.length > 0) {
-        setCurrentCharacter(characters[0]);
+      const alive_characters = characters.filter(character => (character.status !== 0 && character))
+
+      console.log("characters: ", characters)
+      console.log("alive_character: ", alive_characters);
+
+      if (alive_characters.length > 0) {
+        setCurrentCharacter(alive_characters[0]);
       } else {
         throw new Error('キャラクターを作成してください');
       }
     } catch (err) {
+      console.log("fetchCharacterでエラーが起きてる", err.message);
       setError(err instanceof Error ? err.message : '不明なエラーが発生しました');
     } finally {
       setIsLoading(false);
@@ -119,11 +145,13 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const createCharacter = useCallback(async (userId: number, characterName: string) => {
+    console.log("キャラクター作成");
     setIsLoading(true);
     setError(null);
     try {
       const data = {
         character_name: characterName,
+        user_id: userId
       };
       console.log('token: ', token?.Authorization);
       const response = await axios.post(`${API_URL}/characters`, data, {
@@ -138,6 +166,7 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
       setCharacters([created]);
       setCurrentCharacter(created);
     } catch (err) {
+      console.log("キャラクター作成時にエラーが発生しました：", err.message);
       setError(err instanceof Error ? err.message : '不明なエラーが発生しました');
       throw err;
     } finally {
@@ -145,9 +174,35 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+   // 食事状態を取得する関数を追加
+   const fetchMealStatus = useCallback(async (userId: number) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get(`${API_URL}/users/${userId}/meal`, {
+        headers: {
+          Authorization: token?.Authorization,
+        },
+      });
+
+      const mealData = await response.data;
+      setMealStatus(mealData);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '食事状態の取得に失敗しました');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [token]);
+
+  // resetCharacterStateを更新して食事状態もリセット
   const resetCharacterState = useCallback(() => {
-    console.log('resetキャラクター');
+    console.log('キャラクター状態全リセット');
     setCharacters([]);
+    setCurrentCharacter(null);
+    setMealStatus(initialContext.mealStatus);
+  }, []);
+  const resetCurrentCharacter = useCallback(() => {
+    console.log('currentCharacterリセット');
     setCurrentCharacter(null);
   }, []);
 
@@ -223,12 +278,15 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
         currentCharacter,
         isLoading,
         error,
+        mealStatus, 
         fetchUserCharacters,
         fetchCharacter,
         createCharacter,
         performAction,
         fetchActions,
         resetCharacterState, // やれ
+        resetCurrentCharacter,
+        fetchMealStatus, 
       }}
     >
       {children}

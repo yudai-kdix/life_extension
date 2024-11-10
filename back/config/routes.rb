@@ -2,7 +2,8 @@ Rails.application.routes.draw do
   # devise_for :users
   # devise-token-authを用いたユーザー登録
   mount_devise_token_auth_for 'User', at: 'auth', controllers: {
-    registrations: 'auth/registrations'
+    registrations: 'auth/registrations',
+    sessions: 'auth/sessions'
   }
   post 'users/login', to: 'users#login'
   # ユーザーに紐づくキャラクターの一覧を取得

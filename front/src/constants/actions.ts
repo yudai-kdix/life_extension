@@ -10,6 +10,12 @@ export type ActionType =
   | '酒'
   | 'エナドリ';
 
+  export interface MealType {
+    type: '朝食' | '昼食' | '夕食' | '軽食';
+    icon: string;
+    description: string;
+  }
+
 export interface GameAction {
   type: ActionType;
   icon: string;
@@ -18,6 +24,7 @@ export interface GameAction {
   order: number;
   details: { label: string; value: string; description: string }[];
   imagePath: string;
+  subActions?: MealType[]; // 食事用のサブアクション
 }
 
 export const GAME_ACTIONS: GameAction[] = [

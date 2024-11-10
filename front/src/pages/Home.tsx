@@ -1,4 +1,4 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useCharacter } from '../contexts/CharacterContext';
 import { useEffect, useState } from 'react';
 import { ActionButton } from '../components/ActionButton';
@@ -7,12 +7,19 @@ import CharacterImage from '../components/CharacterImage';
 import { useAuth } from '../contexts/AuthContext';
 import DeadHome from '../components/DeadHome';
 
-
 export function Home() {
-  const { currentCharacter, fetchCharacter, performAction } = useCharacter();
+  const {
+    currentCharacter,
+    mealStatus,
+    fetchCharacter,
+    fetchMealStatus,
+    performAction,
+    resetCurrentCharacter,
+  } = useCharacter();
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [selectedAction, setSelectedAction] = useState<GameAction | null>(null);
   const { userInfo } = useAuth();
+  const navigate = useNavigate();
   const userId = userInfo?.id;
 
   useEffect(() => {
@@ -20,6 +27,7 @@ export function Home() {
       try {
         if (userId) {
           await fetchCharacter(userId);
+          await fetchMealStatus(userId);
         }
       } catch (error) {
         console.error('Failed to fetch characters: ', error);
@@ -29,7 +37,7 @@ export function Home() {
     };
 
     fetchData();
-  }, [userId, fetchCharacter]);
+  }, [userId, fetchCharacter, fetchMealStatus]);
 
   if (!userId) {
     return <Navigate to="/sign-in" replace />;
@@ -64,10 +72,16 @@ export function Home() {
     }
   };
 
-  console.log('home, currentCharacter: ', currentCharacter);
+  // キャラ作成時の処理
+  const handleCharacterCreate = async () => {
+    console.log('create');
+    await resetCurrentCharacter();
+    navigate('/create');
+  };
 
-  if(currentCharacter.status == 0) {
-    return <DeadHome character={currentCharacter}/>
+  // 死亡時のホーム
+  if (currentCharacter.status == 0) {
+    return <DeadHome character={currentCharacter} handleCharacterCreate={handleCharacterCreate} />;
   }
 
   return (
@@ -103,11 +117,18 @@ export function Home() {
               <span className="text-sm font-medium">年齢</span>
               <span className="text-sm">{currentCharacter.age}歳</span>
             </div>
+
+            <div>
+              <p>朝食: {mealStatus.morning ? '済' : '未'}</p>
+              <p>昼食: {mealStatus.afternoon ? '済' : '未'}</p>
+              <p>夕食: {mealStatus.night ? '済' : '未'}</p>
+              <p>その他: {mealStatus.other ? '済' : '未'}</p>
+            </div>
           </div>
         </div>
 
         {/* 行動一覧 */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4">
+        <div className="absolute z-10 bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4">
           {GAME_ACTIONS.map((action) => (
             <ActionButton key={action.type} action={action} onClick={handleActionSelect} />
           ))}
@@ -143,8 +164,7 @@ export function Home() {
         {/* キャラクター表示エリア */}
         <div className="flex-1 flex items-center justify-center">
           <div className="w-32 h-32 rounded-full flex items-center justify-center" id="myImage">
-           {/* バックエンド側でキャラクターのstatusの初期値がnullになっているのが修正されれば削除 */}
-           {currentCharacter.status != null ? (<CharacterImage character={currentCharacter} />) : (<p className='px-2 py-6 bg-white text-red-500 font-bold rounded-md'>バックエンドでキャラクター作ったときにstatusがnullになってるかもだから修正してほしい</p>)}
+            <CharacterImage character={currentCharacter} />
           </div>
         </div>
       </div>
