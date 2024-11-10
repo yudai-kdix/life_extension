@@ -8,7 +8,14 @@ import { useAuth } from '../contexts/AuthContext';
 import DeadHome from '../components/DeadHome';
 
 export function Home() {
-  const { currentCharacter, fetchCharacter, performAction, resetCurrentCharacter } = useCharacter();
+  const {
+    currentCharacter,
+    mealStatus,
+    fetchCharacter,
+    fetchMealStatus,
+    performAction,
+    resetCurrentCharacter,
+  } = useCharacter();
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [selectedAction, setSelectedAction] = useState<GameAction | null>(null);
   const { userInfo } = useAuth();
@@ -20,6 +27,7 @@ export function Home() {
       try {
         if (userId) {
           await fetchCharacter(userId);
+          await fetchMealStatus(userId);
         }
       } catch (error) {
         console.error('Failed to fetch characters: ', error);
@@ -29,7 +37,7 @@ export function Home() {
     };
 
     fetchData();
-  }, [userId, fetchCharacter]);
+  }, [userId, fetchCharacter, fetchMealStatus]);
 
   if (!userId) {
     return <Navigate to="/sign-in" replace />;
@@ -108,6 +116,13 @@ export function Home() {
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium">年齢</span>
               <span className="text-sm">{currentCharacter.age}歳</span>
+            </div>
+
+            <div>
+              <p>朝食: {mealStatus.morning ? '済' : '未'}</p>
+              <p>昼食: {mealStatus.afternoon ? '済' : '未'}</p>
+              <p>夕食: {mealStatus.night ? '済' : '未'}</p>
+              <p>その他: {mealStatus.other ? '済' : '未'}</p>
             </div>
           </div>
         </div>

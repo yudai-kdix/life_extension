@@ -66,7 +66,7 @@ export function CharacterSection() {
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span>HP</span>
-              <span>{Math.ceil(character.health_points)}/10</span>
+              <span>{Math.ceil(character.health_points)}/15</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div

@@ -33,11 +33,21 @@ export interface Action {
   action_time: string;
 }
 
+// 食事状態の型定義を追加
+interface MealStatus {
+  morning: boolean;
+  afternoon: boolean;
+  night: boolean;
+  other: boolean;
+}
+
+
 interface CharacterContextType {
   characters: Character[];
   currentCharacter: Character | null;
   isLoading: boolean;
   error: string | null;
+  mealStatus: MealStatus;
   fetchUserCharacters: (userId: number) => Promise<void>;
   fetchCharacter: (userId: number) => Promise<void>;
   createCharacter: (userId: number, characterName: string) => Promise<void>;
@@ -45,6 +55,7 @@ interface CharacterContextType {
   fetchActions: (characterId: number) => Promise<void>;
   resetCharacterState: () => void; //ちゃんと実装しろ 原因は「AuthProviderがCharacterProviderの外にあること」で、依存関係云々があるからめんどくさい
   resetCurrentCharacter: () => void;
+  fetchMealStatus: (userId: number) => Promise<void>;
 }
 
 // 初期値の定義
@@ -53,6 +64,12 @@ const initialContext: CharacterContextType = {
   currentCharacter: null,
   isLoading: false,
   error: null,
+  mealStatus: {
+    morning: false,
+    afternoon: false,
+    night: false,
+    other: false,
+  },
   fetchUserCharacters: async () => {},
   fetchCharacter: async () => {},
   createCharacter: async () => {},
@@ -60,6 +77,7 @@ const initialContext: CharacterContextType = {
   fetchActions: async () => {},
   resetCharacterState: async () => {},
   resetCurrentCharacter: async () => {},
+  fetchMealStatus: async () => {},
 };
 
 // CharacterContextの作成
@@ -73,6 +91,7 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
   const [actions, setActions] = useState<Action[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mealStatus, setMealStatus] = useState<MealStatus>(initialContext.mealStatus);
   const { token } = useAuth();
 
   const fetchUserCharacters = useCallback(async (userId: number) => {
@@ -155,12 +174,33 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+   // 食事状態を取得する関数を追加
+   const fetchMealStatus = useCallback(async (userId: number) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get(`${API_URL}/users/${userId}/meal`, {
+        headers: {
+          Authorization: token?.Authorization,
+        },
+      });
+
+      const mealData = await response.data;
+      setMealStatus(mealData);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '食事状態の取得に失敗しました');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [token]);
+
+  // resetCharacterStateを更新して食事状態もリセット
   const resetCharacterState = useCallback(() => {
     console.log('キャラクター状態全リセット');
     setCharacters([]);
     setCurrentCharacter(null);
+    setMealStatus(initialContext.mealStatus);
   }, []);
-
   const resetCurrentCharacter = useCallback(() => {
     console.log('currentCharacterリセット');
     setCurrentCharacter(null);
@@ -238,6 +278,7 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
         currentCharacter,
         isLoading,
         error,
+        mealStatus, 
         fetchUserCharacters,
         fetchCharacter,
         createCharacter,
@@ -245,6 +286,7 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
         fetchActions,
         resetCharacterState, // やれ
         resetCurrentCharacter,
+        fetchMealStatus, 
       }}
     >
       {children}
