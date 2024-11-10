@@ -104,7 +104,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     password_confirmation: string,
   ) => {
     try {
-      const response = await axios.post(`${API_URL}/users`, {
+      const response = await axios.post(`${API_URL}/auth`, {
         // 後々userで囲まなくてもいいようにしたい
         username,
         email,
@@ -126,7 +126,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string) => {
     try {
-      const response = await axios.post(`${API_URL}/users/login`, {
+      const response = await axios.post(`${API_URL}/auth/sign_in`, {
         email,
         password,
       });
