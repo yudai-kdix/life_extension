@@ -440,3 +440,35 @@ paths:
                     type: boolean
                   other:
                     type: boolean
+  /characters/{id}/logs:
+    get:
+      summary: キャラクターの行動ログを取得(主に死亡時を想定)
+      operationId: listActionLogsForCharacter
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Action logs for specific character
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    user_id:
+                      type: string
+                    character_id:
+                      type: string
+                    action_type:
+                      type: string
+                    created_at:
+                      type: string
+                    updated_at:
+                      type: string

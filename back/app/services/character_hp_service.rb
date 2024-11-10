@@ -15,5 +15,7 @@ class CharacterHpService
     else
       @character.update(health_points: hp)
     end
+    action_log.hp_movement = hp_change
+    action_log.save
   end
 end 

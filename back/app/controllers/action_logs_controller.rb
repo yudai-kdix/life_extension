@@ -1,10 +1,4 @@
 class ActionLogsController < ApplicationController
-  # 特定のキャラクターに関連する行動ログを取得
-  def index_by_character
-    @character = Character.find(params[:character_id])
-    @action_logs = @character.action_logs
-    render json: @action_logs
-  end
 
   # 行動ログを新規作成
   def create
@@ -23,7 +17,7 @@ class ActionLogsController < ApplicationController
       character_lifespan_service = CharacterLifespanService.new(character)
       character_lifespan_service.update_lifespan(@action_log.action_type, @action_log.detail, character.status)
       
-      if character.health_points == 0 then
+      if character.health_points <= 0 then
         character.status = 0
       else
         character.update_characters_status_by_lifespan_ikiteru
@@ -33,6 +27,19 @@ class ActionLogsController < ApplicationController
     else
       render json: @action_log.errors, status: :unprocessable_entity
     end
+  end
+
+  def user_actions
+    @user = User.find(params[:id])
+    @action_logs = @user.action_logs
+    render json: @action_logs
+  end
+
+  # 特定のキャラクターに関連する行動ログを取得
+  def index_by_character
+    @character = Character.find(params[:id])
+    @action_logs = @character.action_logs
+    render json: @action_logs
   end
 
   # 当日の食事ログを取得
