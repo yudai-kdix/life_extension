@@ -2,7 +2,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { useCharacter } from '../contexts/CharacterContext';
 import { useEffect, useState } from 'react';
 import { ActionButton } from '../components/ActionButton';
-import { ActionType, GAME_ACTIONS, GameAction } from '../constants/actions';
+import { ActionType, GAME_ACTIONS, GameAction, MealType } from '../constants/actions';
 import CharacterImage from '../components/CharacterImage';
 import { useAuth } from '../contexts/AuthContext';
 import DeadHome from '../components/DeadHome';
@@ -18,6 +18,7 @@ export function Home() {
   } = useCharacter();
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [selectedAction, setSelectedAction] = useState<GameAction | null>(null);
+  const [selectedMealType, setSelectedMealType] = useState<MealType | null>(null);
   const { userInfo } = useAuth();
   const navigate = useNavigate();
   const userId = userInfo?.id;
@@ -58,16 +59,24 @@ export function Home() {
 
   const handleActionSelect = (action: GameAction) => {
     setSelectedAction(action);
+    setSelectedMealType(null);
+  };
+
+  const handleMealTypeSelect = (mealType: MealType) => {
+    setSelectedMealType(mealType);
   };
 
   const handleActionDetailSelect = async (detail: { value: string }) => {
     if (selectedAction) {
       try {
-        await performAction(selectedAction, detail);
+        const actionType = selectedMealType ? selectedMealType.type : selectedAction.type;
+        console.log("performAction: ", { ...selectedAction, type: actionType as ActionType }, detail);
+        await performAction({ ...selectedAction, type: actionType as ActionType }, detail);
       } catch (error) {
         console.error('Action failed:', error);
       } finally {
         setSelectedAction(null); // モーダルを閉じる
+        setSelectedMealType(null);
       }
     }
   };
@@ -138,24 +147,55 @@ export function Home() {
         {selectedAction && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-lg p-6 max-w-sm w-full">
-              <h3 className="text-lg font-semibold mb-4">{selectedAction.type}の詳細を選択</h3>
-              <div className="space-y-2">
-                {selectedAction.details.map((detail) => (
-                  <button
-                    key={detail.value}
-                    onClick={() => handleActionDetailSelect(detail)}
-                    className="w-full p-3 text-left hover:bg-gray-100 rounded-lg transition-colors"
-                  >
-                    <div className="font-medium">{detail.label}</div>
-                    <div className="text-sm text-gray-600">{detail.description}</div>
-                  </button>
-                ))}
-              </div>
+              {selectedAction.type === '食事' && !selectedMealType ? (
+                <>
+                  <h3 className="text-lg font-semibold mb-4">食事の種類を選択</h3>
+                  <div className="space-y-2">
+                    {selectedAction.subActions?.map((subAction) => (
+                      <button
+                        key={subAction.type}
+                        onClick={() => handleMealTypeSelect(subAction)}
+                        className="w-full p-3 text-left hover:bg-gray-100 rounded-lg transition-colors"
+                      >
+                        <div className="font-medium flex items-center gap-2">
+                          <span>{subAction.icon}</span>
+                          <span>{subAction.type}</span>
+                        </div>
+                        <div className="text-sm text-gray-600">{subAction.description}</div>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h3 className="text-lg font-semibold mb-4">
+                    {selectedMealType?.type || selectedAction.type}の詳細を選択
+                  </h3>
+                  <div className="space-y-2">
+                    {selectedAction.details.map((detail) => (
+                      <button
+                        key={detail.value}
+                        onClick={() => handleActionDetailSelect(detail)}
+                        className="w-full p-3 text-left hover:bg-gray-100 rounded-lg transition-colors"
+                      >
+                        <div className="font-medium">{detail.label}</div>
+                        <div className="text-sm text-gray-600">{detail.description}</div>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
               <button
-                onClick={() => setSelectedAction(null)}
+                onClick={() => {
+                  if (selectedMealType) {
+                    setSelectedMealType(null);
+                  } else {
+                    setSelectedAction(null);
+                  }
+                }}
                 className="mt-4 w-full p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
               >
-                キャンセル
+                {selectedMealType ? '戻る' : 'キャンセル'}
               </button>
             </div>
           </div>

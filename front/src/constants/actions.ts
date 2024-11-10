@@ -1,10 +1,7 @@
 // src/constants/actions.ts
 export type ActionType =
   | '睡眠'
-  | '朝食'
-  | '昼食'
-  | '夕食'
-  | '軽食'
+  | '食事'
   | '運動'
   | 'タバコ'
   | '酒'
@@ -59,102 +56,49 @@ export const GAME_ACTIONS: GameAction[] = [
     ],
   },
   {
-    type: '朝食',
-    icon: '🍳',
-    description: '朝食の質でHPと寿命が変化します',
+    type: '食事',
+    icon: '🍚',
+    description: '食事の質でHPと寿命が変化します',
     position: 'right',
     order: 1,
-    imagePath: '/src/assets/images/breakfast.png',
-    details: [
+    imagePath: '/src/assets/images/meal.png',
+    subActions: [
       {
-        label: '食べていない',
-        value: 'meal_none',
-        description: '朝食を抜くと1日の活力が低下します。',
+        type: '朝食',
+        icon: '🍳',
+        description: '朝食の質でHPと寿命が変化します',
       },
       {
-        label: '不健康な食事',
-        value: 'meal_unhealthy',
-        description: '栄養が偏った朝食です。HPがやや減少します。',
+        type: '昼食',
+        icon: '🍚',
+        description: '昼食の質でHPと寿命が変化します',
       },
       {
-        label: 'ちゃんとした食事',
-        value: 'meal_healthy',
-        description: '栄養バランスの取れた朝食です。HPが回復します。',
-      },
-    ],
-  },
-  {
-    type: '昼食',
-    icon: '🍚',
-    description: '昼食の質でHPと寿命が変化します',
-    position: 'right',
-    order: 2,
-    imagePath: '/src/assets/images/lunch.png',
-    details: [
-      {
-        label: '食べていない',
-        value: 'meal_none',
-        description: '昼食を抜くと午後の活力が低下します。',
+        type: '夕食',
+        icon: '🍖',
+        description: '夕食の質でHPと寿命が変化します',
       },
       {
-        label: '不健康な食事',
-        value: 'meal_unhealthy',
-        description: '栄養が偏った昼食です。HPがやや減少します。',
-      },
-      {
-        label: 'ちゃんとした食事',
-        value: 'meal_healthy',
-        description: '栄養バランスの取れた昼食です。HPが回復します。',
+        type: '軽食',
+        icon: '🍪',
+        description: '軽食の質でHPと寿命が変化します',
       },
     ],
-  },
-  {
-    type: '夕食',
-    icon: '🍖',
-    description: '夕食の質でHPと寿命が変化します',
-    position: 'right',
-    order: 3,
-    imagePath: '/src/assets/images/dinner.png',
     details: [
       {
         label: '食べていない',
         value: 'meal_none',
-        description: '夕食を抜くと回復が遅くなります。',
+        description: '食事を抜くと活力が低下します。',
       },
       {
         label: '不健康な食事',
         value: 'meal_unhealthy',
-        description: '栄養が偏った夕食です。HPがやや減少します。',
+        description: '栄養が偏った食事です。HPがやや減少します。',
       },
       {
         label: 'ちゃんとした食事',
         value: 'meal_healthy',
-        description: '栄養バランスの取れた夕食です。HPが回復します。',
-      },
-    ],
-  },
-  {
-    type: '軽食',
-    icon: '🍪',
-    description: '軽食の質でHPと寿命が変化します',
-    position: 'right',
-    order: 4,
-    imagePath: '/src/assets/images/snack.png',
-    details: [
-      {
-        label: '食べていない',
-        value: 'meal_none',
-        description: '空腹をがまんしています。',
-      },
-      {
-        label: '不健康な食事',
-        value: 'meal_unhealthy',
-        description: '栄養が偏った軽食です。HPがやや減少します。',
-      },
-      {
-        label: 'ちゃんとした食事',
-        value: 'meal_healthy',
-        description: '適度な軽食です。HPが少し回復します。',
+        description: '栄養バランスの取れた食事です。HPが回復します。',
       },
     ],
   },
