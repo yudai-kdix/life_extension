@@ -44,7 +44,9 @@ export function Header() {
           {/* Left section - Logo */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
-              <span><img width={30} src="/src/assets/images/logo.png" alt="" /></span>
+              <span>
+                <img width={30} src="/src/assets/images/logo.png" alt="" />
+              </span>
               <span className="text-base font-bold text-gray-900">へるぴぃ</span>
             </Link>
           </div>

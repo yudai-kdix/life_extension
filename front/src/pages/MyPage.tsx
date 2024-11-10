@@ -12,14 +12,17 @@ export function MyPage() {
   const { userInfo } = useAuth();
   const userId = userInfo?.id;
 
+  useEffect(() => {
+    if (userId) {
+      fetchUserCharacters(userId);
+    }
+    
+  }, [userId, fetchUserCharacters]);
+
   if (!userId) {
     console.log('userIdがないため/sign-inにリダイレクト');
     return <Navigate to="/" replace />;
   }
-
-  useEffect(() => {
-    fetchUserCharacters(userId);
-  }, [userId, fetchUserCharacters]);
 
   if (isLoading) {
     return (
