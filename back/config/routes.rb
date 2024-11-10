@@ -18,4 +18,6 @@ Rails.application.routes.draw do
   get '/characters/:id/logs', to: 'action_logs#index_by_character'
   # 当日の食事ログを取得
   get '/users/:user_id/meal', to: 'action_logs#meal_logs'
+
+  get '/characters/death_detail', to: 'action_logs#character_death'
 end
