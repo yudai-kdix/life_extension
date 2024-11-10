@@ -468,6 +468,12 @@ paths:
                       type: string
                     action_type:
                       type: string
+                    detail:
+                      type: string
+                    hp_movement:
+                      type: integer
+                    lifespan_movement:
+                      type: integer
                     created_at:
                       type: string
                     updated_at:
