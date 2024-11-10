@@ -113,7 +113,7 @@ export function Home() {
         </div>
 
         {/* 行動一覧 */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4">
+        <div className="absolute z-10 bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4">
           {GAME_ACTIONS.map((action) => (
             <ActionButton key={action.type} action={action} onClick={handleActionSelect} />
           ))}
