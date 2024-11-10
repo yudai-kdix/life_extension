@@ -6,7 +6,7 @@ class CharacterHpService
   end
 
   # 行動に応じてHPを増減させるメソッド
-  def update_hp(action_type, level)
+  def update_hp(action_type, level,action_log)
     diffhp = DiffHp.new
     hp_change = diffhp.status_change(action_type, level)
     hp = @character.health_points + hp_change
@@ -18,4 +18,4 @@ class CharacterHpService
     action_log.hp_movement = hp_change
     action_log.save
   end
-end 
+end
