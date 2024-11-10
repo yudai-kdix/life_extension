@@ -12,7 +12,7 @@ class CharactersController < ApplicationController
   # 特定のユーザーのキャラクター一覧を取得
   def index_by_user
     @user = User.find(params[:user_id])
-    @characters = @user.characters
+    @characters = @user.characters.order(:created_at)
     render json: @characters
   end
 
