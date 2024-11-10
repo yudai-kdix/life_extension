@@ -2,7 +2,8 @@ Rails.application.routes.draw do
   # devise_for :users
   # devise-token-authを用いたユーザー登録
   mount_devise_token_auth_for 'User', at: 'auth', controllers: {
-    registrations: 'auth/registrations'
+    registrations: 'auth/registrations',
+    sessions: 'auth/sessions'
   }
   post 'users/login', to: 'users#login'
   # ユーザーに紐づくキャラクターの一覧を取得
@@ -18,4 +19,6 @@ Rails.application.routes.draw do
   get '/characters/:id/logs', to: 'action_logs#index_by_character'
   # 当日の食事ログを取得
   get '/users/:user_id/meal', to: 'action_logs#meal_logs'
+
+  get '/characters/death_detail', to: 'action_logs#character_death'
 end
