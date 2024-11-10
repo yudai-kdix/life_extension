@@ -70,7 +70,11 @@ export function Home() {
     if (selectedAction) {
       try {
         const actionType = selectedMealType ? selectedMealType.type : selectedAction.type;
-        console.log("performAction: ", { ...selectedAction, type: actionType as ActionType }, detail);
+        console.log(
+          'performAction: ',
+          { ...selectedAction, type: actionType as ActionType },
+          detail,
+        );
         await performAction({ ...selectedAction, type: actionType as ActionType }, detail);
       } catch (error) {
         console.error('Action failed:', error);
@@ -169,7 +173,7 @@ export function Home() {
         </div>
 
         {/* 行動一覧 */}
-        <div className="absolute z-10 bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4">
+        <div className="w-screen overflow-x-auto flex justify-between lg:justify-center items-center px-4 absolute z-10 bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4">
           {GAME_ACTIONS.map((action) => (
             <ActionButton key={action.type} action={action} onClick={handleActionSelect} />
           ))}

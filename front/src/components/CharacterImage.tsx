@@ -81,9 +81,9 @@ function CharacterImage({
 
     const handleClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      
+
       // インタラクティブ要素のチェック
-      const isInteractiveElement = (
+      const isInteractiveElement =
         // ステータス表示エリア（右上のカード）
         target.closest('.bg-white\\/90.backdrop-blur-sm') !== null ||
         // アクションボタン
@@ -91,8 +91,7 @@ function CharacterImage({
         // モーダル
         target.closest('.fixed.inset-0.bg-black\\/50') !== null ||
         // キャラ作成時の処理
-        target.closest('.text-lg') !== null
-      );
+        target.closest('.text-lg') !== null;
 
       // エフェクトコンテナのチェック
       const isEffectsContainer = target.closest('#effects-container') !== null;
@@ -103,9 +102,13 @@ function CharacterImage({
         const windowCenterY = window.innerHeight / 2;
 
         // クリック位置に基づいて新しい位置を計算
-        const newX = event.clientX - containerPosition.x -
+        const newX =
+          event.clientX -
+          containerPosition.x -
           (event.clientX >= windowCenterX ? containerWidth : 0);
-        const newY = event.clientY - containerPosition.y -
+        const newY =
+          event.clientY -
+          containerPosition.y -
           (event.clientY >= windowCenterY ? containerHeight : 0);
 
         setTargetPosition({ x: newX, y: newY });
