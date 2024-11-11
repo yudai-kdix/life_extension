@@ -66,8 +66,26 @@ export function Home() {
     setSelectedMealType(null);
   };
 
+  // 食事タイプが選択可能かどうかを判定する関数を追加
+  const isMealTypeAvailable = (type: string): boolean => {
+    switch (type) {
+      case '朝食':
+        return !mealStatus.morning;
+      case '昼食':
+        return !mealStatus.afternoon;
+      case '夕食':
+        return !mealStatus.night;
+      case '間食':
+        return !mealStatus.other;
+      default:
+        return true;
+    }
+  };
+
   const handleMealTypeSelect = (mealType: MealType) => {
-    setSelectedMealType(mealType);
+    if (isMealTypeAvailable(mealType.type)) {
+      setSelectedMealType(mealType);
+    }
   };
 
   const handleActionDetailSelect = async (detail: { value: string }) => {
@@ -90,8 +108,8 @@ export function Home() {
       } finally {
         setSelectedAction(null); // モーダルを閉じる
         setSelectedMealType(null);
-         // 3秒後にアクション情報をクリア
-         setTimeout(() => {
+        // 3秒後にアクション情報をクリア
+        setTimeout(() => {
           setCurrentAction(null);
         }, 3000);
       }
@@ -100,7 +118,6 @@ export function Home() {
 
   // キャラ作成時の処理
   const handleCharacterCreate = async () => {
-    console.log('create');
     await resetCurrentCharacter();
     navigate('/create');
   };
@@ -122,7 +139,9 @@ export function Home() {
               <div className="font-semibold mb-2 border-b-2">{currentCharacter.character_name}</div>
               <div className="flex justify-between items-center mb-1">
                 <span className="text-sm font-medium">HP</span>
-                <span className="text-sm">{Number(currentCharacter.health_points).toFixed(1)}/15</span>
+                <span className="text-sm">
+                  {Number(currentCharacter.health_points).toFixed(1)}/15
+                </span>
               </div>
               <div className="w-32 h-2 bg-gray-200 rounded-full">
                 <div
@@ -200,19 +219,28 @@ export function Home() {
                 <>
                   <h3 className="text-lg font-semibold mb-4">食事の種類を選択</h3>
                   <div className="space-y-2">
-                    {selectedAction.subActions?.map((subAction) => (
-                      <button
-                        key={subAction.type}
-                        onClick={() => handleMealTypeSelect(subAction)}
-                        className="w-full p-3 text-left hover:bg-gray-100 rounded-lg transition-colors"
-                      >
-                        <div className="font-medium flex items-center gap-2">
-                          <span>{subAction.icon}</span>
-                          <span>{subAction.type}</span>
-                        </div>
-                        <div className="text-sm text-gray-600">{subAction.description}</div>
-                      </button>
-                    ))}
+                    {selectedAction.subActions?.map((subAction) => {
+                      const isAvailable = isMealTypeAvailable(subAction.type);
+                      return (
+                        <button
+                          key={subAction.type}
+                          onClick={() => handleMealTypeSelect(subAction)}
+                          disabled={!isAvailable}
+                          className={`w-full p-3 text-left hover:bg-gray-100 rounded-lg transition-colors ${
+                            isAvailable
+                              ? "hover:bg-gray-100"
+                              : "opacity-50 cursor-not-allowed bg-gray-50"
+                          }`}
+                        >
+                          <div className="font-medium flex items-center gap-2">
+                            <span>{subAction.icon}</span>
+                            <span>{subAction.type}</span>
+                            {!isAvailable && <span className='text-sm text-gray-500'>(完了済み)</span>}
+                          </div>
+                          <div className="text-sm text-gray-600">{subAction.description}</div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </>
               ) : (
@@ -253,7 +281,7 @@ export function Home() {
         {/* キャラクター表示エリア */}
         <div className="flex-1 flex items-center justify-center">
           <div className="w-32 h-32 rounded-full flex items-center justify-center" id="myImage">
-            <CharacterImage character={currentCharacter}  currentAction={currentAction}/>
+            <CharacterImage character={currentCharacter} currentAction={currentAction} />
           </div>
         </div>
       </div>

@@ -92,7 +92,7 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mealStatus, setMealStatus] = useState<MealStatus>(initialContext.mealStatus);
-  const { token } = useAuth();
+  const { token, userInfo } = useAuth();
 
   const fetchUserCharacters = useCallback(async (userId: number) => {
     console.log('fetchUserCharacterを実行');
@@ -241,6 +241,12 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
           prevCharacters.map((char) => (char.id === character.id ? character : char)),
         );
 
+        // mealStatusを更新
+        if (userInfo?.id) {
+          console.log("mealStatusを更新")
+          fetchMealStatus(userInfo?.id)
+        }
+        
         // キャラクターが死亡した場合の処理
         if (character.status === 0) {
           setError('キャラクターが死亡しました');
