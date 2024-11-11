@@ -2,17 +2,34 @@ import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { Character, CharacterStatus } from '../contexts/CharacterContext';
 import { ActionType } from '@/constants/actions';
 
+// 1. 型定義
 interface CharacterImage {
   sad?: string;
   normal?: string;
   happy?: string;
   dead?: string;
-  // アクション用の画像を追加
+  // アクション用の画像
   smoking?: string;
   drinking?: string;
   energyDrink?: string;
 }
 
+interface Position {
+  x: number;
+  y: number;
+}
+
+interface CharacterImageProps {
+  character: Character;
+  containerWidth?: number;
+  containerHeight?: number;
+  currentAction?: {
+    type: ActionType;
+    value: string;
+  } | null;
+}
+
+// 2. 定数定義
 const CHARACTER_IMAGES: Record<CharacterStatus, CharacterImage> = {
   0: {
     dead: '/src/assets/images/tako_dead.png',
@@ -43,20 +60,15 @@ const CHARACTER_IMAGES: Record<CharacterStatus, CharacterImage> = {
   },
 };
 
-interface Position {
-  x: number;
-  y: number;
-}
-
-interface CharacterImageProps {
-  character: Character;
-  containerWidth?: number;
-  containerHeight?: number;
-  currentAction?: {
-    type: ActionType;
-    value: string;
-  } | null;
-}
+const ACTION_MAP: Record<string, ActionType | null> = {
+  smoke_yes: 'タバコ',
+  smoke_none: null,
+  alcohol_moderate: '酒',
+  alcohol_excessive: '酒',
+  alcohol_none: null,
+  energy_consumed: 'エナドリ',
+  energy_none: null,
+};
 
 function CharacterImage({
   character,
@@ -64,10 +76,16 @@ function CharacterImage({
   containerHeight = 100,
   currentAction,
 }: CharacterImageProps) {
+  // 3. state/ref定義
   const containerRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<number | null>(null);
+
   const [targetPosition, setTargetPosition] = useState<Position>({ x: 0, y: 0 });
   const [containerPosition, setContainerPosition] = useState<Position>({ x: 0, y: 0 });
   const [temporaryAction, setTemporaryAction] = useState<ActionType | null>(null);
+
+  // 4. 表示に関するロジック
+  const imageSize = character.status === 0 ? 350 : 160;
 
   const currentImage = useMemo(() => {
     const images = CHARACTER_IMAGES[character.status];
@@ -76,7 +94,6 @@ function CharacterImage({
       return images.dead;
     }
 
-    // 一時的なアクション画像の表示
     if (temporaryAction) {
       switch (temporaryAction) {
         case 'タバコ':
@@ -88,113 +105,104 @@ function CharacterImage({
       }
     }
 
-    // 通常の状態に応じた画像
     if (character.health_points < 5) return images.sad;
     if (character.health_points < 10) return images.normal;
     return images.happy;
   }, [character.status, character.health_points, temporaryAction]);
 
+  const characterPosition = useMemo(() => {
+    return character.status === 0 ? { x: 0, y: 0 } : targetPosition;
+  }, [character.status, targetPosition]);
+
+  // 5. コンテナの位置更新
   useEffect(() => {
-    const updateContainerPosition = () => {
+    function updateContainerPosition() {
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
         setContainerPosition({ x: rect.x, y: rect.y });
       }
-    };
+    }
 
     updateContainerPosition();
     window.addEventListener('resize', updateContainerPosition);
     return () => window.removeEventListener('resize', updateContainerPosition);
   }, []);
 
-  // アクション画像変更用Effect
+  // 6. クリック位置の処理
   useEffect(() => {
-    if (!currentAction) return;
+    if (character.status === 0) return;
 
-    const actionMap: Record<string, ActionType> = {
-      'smoke_yes': 'タバコ',
-      'alcohol_moderate': '酒',
-      'alcohol_excessive': '酒',
-      'energy_consumed': 'エナドリ',
-    };
-
-    if (actionMap[currentAction.value]) {
-      setTemporaryAction(actionMap[currentAction.value]);
-      
-      // 3秒後に元の画像に戻す
-      const timer = setTimeout(() => {
-        setTemporaryAction(null);
-      }, 3000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [currentAction]);
-
-  useEffect(() => {
-    if (character.status === 0) {
-      return;
-    }
-
-    const handleClick = (event: MouseEvent) => {
+    function handleClick(event: MouseEvent) {
       const target = event.target as HTMLElement;
 
-      // インタラクティブ要素のチェック
-      const isInteractiveElement =
-        // ステータス表示エリア（右上のカード）
-        target.closest('.bg-white\\/90.backdrop-blur-sm') !== null ||
-        // アクションボタン
-        target.closest('button') !== null ||
-        // モーダル
-        target.closest('.fixed.inset-0.bg-black\\/50') !== null ||
-        // キャラ作成時の処理
-        target.closest('.text-lg') !== null;
+      const isInteractiveElement = [
+        '.bg-white\\/90.backdrop-blur-sm', // ステータス表示
+        'button', // アクションボタン
+        '.fixed.inset-0.bg-black\\/50', // モーダル
+        '.text-lg', // キャラ作成
+      ].some((selector) => target.closest(selector) !== null);
 
-      // エフェクトコンテナのチェック
       const isEffectsContainer = target.closest('#effects-container') !== null;
 
-      // インタラクティブ要素上のクリックでなければ位置を更新
       if (!isInteractiveElement || isEffectsContainer) {
         const windowCenterX = window.innerWidth / 2;
         const windowCenterY = window.innerHeight / 2;
 
-        // クリック位置に基づいて新しい位置を計算
-        const newX =
-          event.clientX -
-          containerPosition.x -
-          (event.clientX >= windowCenterX ? containerWidth : 0);
-        const newY =
-          event.clientY -
-          containerPosition.y -
-          (event.clientY >= windowCenterY ? containerHeight : 0);
-
-        setTargetPosition({ x: newX, y: newY });
+        setTargetPosition({
+          x:
+            event.clientX -
+            containerPosition.x -
+            (event.clientX >= windowCenterX ? containerWidth : 0),
+          y:
+            event.clientY -
+            containerPosition.y -
+            (event.clientY >= windowCenterY ? containerHeight : 0),
+        });
       }
-    };
+    }
 
     window.addEventListener('click', handleClick);
     return () => window.removeEventListener('click', handleClick);
   }, [character.status, containerPosition, containerWidth, containerHeight]);
 
-  const characterPosition = useMemo(() => {
-    if (character.status === 0) {
-      return { x: 0, y: 0 };
-    }
-    return targetPosition;
-  }, [character.status, targetPosition]);
+  // 7. アクション処理
+  useEffect(() => {
+    if (!currentAction) return;
 
-  // 画像サイズの決定
-  const imageSize = useMemo(() => {
-    if (character.status === 0) return 350;  // 死亡時は大きいサイズ
-    
-    return 160;  // それ以外は統一サイズ
-  }, [character.status]);
+    const newAction = ACTION_MAP[currentAction.value];
+    if (newAction !== undefined) {
+      setTemporaryAction(newAction);
+    }
+  }, [currentAction]);
+
+  // 8. アクションタイマー処理
+  useEffect(() => {
+    if (timerRef.current !== null) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+
+    if (temporaryAction !== null) {
+      timerRef.current = window.setTimeout(() => {
+        setTemporaryAction(null);
+        timerRef.current = null;
+      }, 3000);
+    }
+
+    return () => {
+      if (timerRef.current !== null) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [temporaryAction]);
 
   return (
     <div ref={containerRef} className="relative">
       <img
         src={currentImage}
         width={imageSize}
-        height={imageSize}  // heightも明示的に指定
+        height={imageSize}
         alt={`Character (Status: ${character.status === 0 ? 'Dead' : 'Alive'}, HP: ${character.health_points}${
           temporaryAction ? `, Action: ${temporaryAction}` : ''
         })`}

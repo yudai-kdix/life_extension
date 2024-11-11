@@ -5,7 +5,8 @@ export type ActionType =
   | '運動'
   | 'タバコ'
   | '酒'
-  | 'エナドリ';
+  | 'エナドリ'
+  | null;
 
   export interface MealType {
     type: '朝食' | '昼食' | '夕食' | '軽食';
