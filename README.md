@@ -1,7 +1,6 @@
 # 健康促進アプリ「へるぴぃ」
 ![image](/room/発表.png)
 
-**開発コードは[devブランチ](https://github.com/jphacks/os_2410/tree/dev)にあります！！！！！**
 
 ## デモ動画
 [![へるぴぃ](room/部屋.png)](https://youtube.com/shorts/INe-ppj-uPs?feature=share)
@@ -58,7 +57,6 @@
 
 
 ## 開発技術
-**開発コードは[devブランチ](https://github.com/jphacks/os_2410/tree/dev)にあります！！！！！**
 ### 活用した技術
 #### フレームワーク・ライブラリ・モジュール
 * Ruby on Rails
