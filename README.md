@@ -3,7 +3,7 @@
 
 
 ## デモ動画
-[![へるぴぃ](room/部屋.png)](https://youtube.com/shorts/INe-ppj-uPs?feature=share)
+[![へるぴぃ](room/部屋.png)](https://youtube.com/shorts/_yqUTSn6jV0?si=Lw7S9FLF-pXdBXuS)
 
 ## 概要
 - ユーザーの生活習慣の健康度、不健康度をキャラクターの寿命やHPという形で可視化することで、ユーザーに健康的な生活を送るように促すアプリです。
