@@ -3,7 +3,7 @@
 
 
 ## デモ動画
-[![へるぴぃ](room/部屋.png)](https://youtube.com/shorts/_yqUTSn6jV0?feature=share
+[![へるぴぃ](video/サムネイル.png)](https://youtube.com/shorts/_yqUTSn6jV0?feature=share
 )
 
 ## 概要
