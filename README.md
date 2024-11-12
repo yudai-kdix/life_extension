@@ -1,7 +1,7 @@
 # 健康促進アプリ「へるぴぃ」
 ![image](/room/発表.png)
 
-JPHACKS 2024参加作品です！
+### JPHACKS 2024参加作品です！
 [JPHACKSのときのリポジトリ](https://github.com/jphacks/os_2410)
 ## デモ動画
 [![へるぴぃ](video/サムネイル.png)](https://youtube.com/shorts/_yqUTSn6jV0?feature=share
