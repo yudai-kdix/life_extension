@@ -5,7 +5,7 @@
 [JPHACKSのときのリポジトリ](https://github.com/jphacks/os_2410)
 ## デモ動画
 
-[![alt設定](http://img.youtube.com/vi/_yqUTSn6jV0/0.jpg)](https://www.youtube.com/watch?v={_yqUTSn6jV0})
+[![alt設定](http://img.youtube.com/vi/_yqUTSn6jV0/0.jpg)](https://www.youtube.com/watch?v=_yqUTSn6jV0)
 
 
 ## 概要
