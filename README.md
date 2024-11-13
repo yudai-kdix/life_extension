@@ -4,8 +4,9 @@
 ### JPHACKS 2024参加作品です！
 [JPHACKSのときのリポジトリ](https://github.com/jphacks/os_2410)
 ## デモ動画
-[![へるぴぃ](video/サムネイル.png)](https://youtube.com/shorts/_yqUTSn6jV0?feature=share
-)
+
+[![alt設定](http://img.youtube.com/vi/_yqUTSn6jV0/0.jpg)](https://www.youtube.com/watch?v={_yqUTSn6jV0})
+
 
 ## 概要
 - ユーザーの生活習慣の健康度、不健康度をキャラクターの寿命やHPという形で可視化することで、ユーザーに健康的な生活を送るように促すアプリです。
